@@ -6,141 +6,227 @@
 <title>Ramadan Recipe Suggestion Board</title>
 <style>
   :root{
-    --cream:#FFF9F2; --card:#FFFFFF; --peach:#FFE8D6; --mint:#DFF3E9;
-    --sky:#E3F0FA; --lilac:#EFE9F7; --text:#4A3B32; --soft:#8A7668;
-    --accent:#E8834E; --accent-dark:#D06B35; --green:#5B9E7D; --radius:16px;
+    --lime:#71bd46; --pale-yellow:#ebd874; --leaf:#468731; --dark:#222b16;
+    --rust:#c84c1f; --orange:#f59519; --clay:#ce7d44; --brown:#793e2b;
+    --cream:#f1f1ba; --light-green:#a8d969; --slate:#3e5e6e; --gold:#eaba38;
+    --bg:#FBF7EC; --card:#FFFFFF; --text:#2e3524; --soft:#7d8371;
+    --radius:20px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
   body{
     font-family: "Avenir", "Segoe UI", system-ui, -apple-system, sans-serif;
-    background: var(--cream); color: var(--text); line-height:1.55;
+    background: var(--bg); color: var(--text); line-height:1.55;
+    overflow-x:hidden;
   }
+  /* entrance animations */
+  @keyframes fadeUp{from{opacity:0; transform:translateY(24px);} to{opacity:1; transform:translateY(0);}}
+  @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
+  @keyframes floatY{0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);}}
+  @keyframes slowSpin{from{transform:rotate(0);} to{transform:rotate(360deg);}}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(245,149,25,.35);} 50%{box-shadow:0 0 0 12px rgba(245,149,25,0);}}
+  @keyframes shimmer{0%{background-position:-400px 0;} 100%{background-position:400px 0;}}
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.visible{opacity:1; transform:translateY(0);}
+
   header{
-    background: linear-gradient(135deg, #FFE8D6, #FDF3E7 60%, #DFF3E9);
-    text-align:center; padding:36px 20px 28px;
+    position:relative; overflow:hidden; color:#fff; text-align:center;
+    padding:70px 20px 150px;
+    background: linear-gradient(140deg, var(--dark) 0%, var(--leaf) 55%, var(--lime) 100%);
   }
-  header h1{font-size:1.9rem; font-weight:700; color:var(--text); letter-spacing:.3px;}
-  header p{color:var(--soft); margin-top:6px; font-size:1rem;}
-  .crescent{font-size:1.6rem;}
-  main{max-width:1000px; margin:0 auto; padding:24px 20px 60px;}
-  section{margin-bottom:36px;}
-  .section-title{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
-  .section-title h2{font-size:1.3rem; color:var(--text);}
-  .section-sub{color:var(--soft); font-size:.95rem; margin-bottom:16px;}
+  header::after{
+    content:""; position:absolute; inset:auto -10% -60% -10%; height:100%;
+    background: var(--bg); border-radius:50% 50% 0 0;
+  }
+  .stars{position:absolute; inset:0; pointer-events:none;}
+  .stars span{position:absolute; color:var(--pale-yellow); opacity:.85; animation:floatY 6s ease-in-out infinite;}
+  .stars span:nth-child(1){top:12%; left:10%; font-size:1.6rem; animation-delay:0s;}
+  .stars span:nth-child(2){top:22%; left:24%; font-size:1rem; animation-delay:1.2s;}
+  .stars span:nth-child(3){top:14%; right:18%; font-size:1.3rem; animation-delay:2s;}
+  .stars span:nth-child(4){top:30%; right:8%; font-size:1rem; animation-delay:.6s;}
+  .moon{position:absolute; top:34px; right:9%; font-size:3.4rem; animation:floatY 8s ease-in-out infinite; filter:drop-shadow(0 0 18px rgba(235,216,116,.7));}
+  .lantern{position:absolute; top:44px; left:7%; font-size:2.6rem; animation:floatY 7s ease-in-out infinite reverse;}
+  header .inner{position:relative; z-index:2; animation:fadeUp .8s ease both;}
+  header h1{font-size:2.2rem; font-weight:800; letter-spacing:.5px; text-shadow:0 2px 12px rgba(0,0,0,.25);}
+  header p{margin-top:10px; color:var(--cream); font-size:1.05rem;}
+  header .badge{
+    display:inline-flex; align-items:center; gap:8px; margin-top:18px;
+    background:rgba(255,255,255,.16); backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.3); border-radius:999px;
+    padding:8px 18px; font-size:.88rem;
+  }
+  main{max-width:1060px; margin:-46px auto 0; padding:0 20px 70px; position:relative; z-index:3;}
+  section{margin-bottom:44px;}
+  .section-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px;}
+  .section-head h2{font-size:1.45rem; font-weight:800; color:var(--dark);}
+  .pill{background:var(--pale-yellow); color:var(--dark); border-radius:999px; padding:3px 12px; font-size:.78rem; font-weight:700;}
+  .section-sub{color:var(--soft); font-size:.95rem; margin-bottom:18px;}
 
   /* summary banner */
   #summary{
-    background:var(--card); border:1px solid #F2E4D8; border-radius:var(--radius);
-    padding:16px 20px; margin-bottom:34px; box-shadow:0 2px 8px rgba(200,160,120,.10);
-    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:var(--card); border-radius:var(--radius); padding:18px 22px;
+    box-shadow:0 10px 30px rgba(34,43,22,.10); display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    animation:fadeUp .7s ease both; border:1px solid #EDE7D2;
   }
-  #summary .icon{font-size:1.4rem;}
-  #summary-text{font-size:1rem;}
+  #summary .icon{
+    width:44px; height:44px; border-radius:14px; background:var(--cream);
+    display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0;
+  }
+  #summary-text{font-size:.98rem;}
 
-  /* filter chips (Smart Picks inputs also used live) */
+  /* chips */
   .chip-row{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px;}
+  .chip-group-label{font-size:.85rem; color:var(--soft); margin:12px 0 6px; font-weight:600;}
   .chip{
-    border:1.5px solid #EAD9C8; background:#fff; color:var(--text);
-    border-radius:999px; padding:8px 16px; font-size:.9rem; cursor:pointer;
-    transition:all .15s ease; font-family:inherit;
+    border:1.5px solid #E3DCC4; background:#fff; color:var(--text);
+    border-radius:999px; padding:9px 18px; font-size:.9rem; cursor:pointer;
+    transition:all .2s ease; font-family:inherit; font-weight:600;
   }
-  .chip:hover{border-color:var(--accent); color:var(--accent-dark);}
-  .chip.active{background:var(--accent); border-color:var(--accent); color:#fff;}
-  .chip-group-label{font-size:.85rem; color:var(--soft); margin:10px 0 4px;}
+  .chip:hover{border-color:var(--orange); color:var(--rust); transform:translateY(-2px);}
+  .chip.active{background:var(--orange); border-color:var(--orange); color:#fff; box-shadow:0 6px 16px rgba(245,149,25,.35);}
 
   /* recipe cards */
-  #board{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px;}
+  #board{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:22px;}
   .card{
     background:var(--card); border-radius:var(--radius); overflow:hidden;
-    box-shadow:0 3px 10px rgba(200,160,120,.14); border:1px solid #F4E9DD;
-    display:flex; flex-direction:column; transition:transform .15s ease;
+    box-shadow:0 8px 24px rgba(34,43,22,.10); border:1px solid #EFEAD8;
+    display:flex; flex-direction:column;
+    opacity:0; transform:translateY(26px);
+    transition:transform .25s ease, box-shadow .25s ease;
+    animation:fadeUp .7s ease both;
   }
-  .card:hover{transform:translateY(-3px);}
-  .card-img{
-    height:110px; display:flex; align-items:center; justify-content:center;
-    font-size:2.6rem;
+  .card:hover{transform:translateY(-6px) scale(1.01); box-shadow:0 16px 36px rgba(34,43,22,.16);}
+  .card-img{height:170px; overflow:hidden; position:relative;}
+  .card-img img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
+  .card:hover .card-img img{transform:scale(1.08);}
+  .card-img .emoji-float{
+    position:absolute; right:12px; bottom:10px; font-size:1.8rem;
+    animation:floatY 4s ease-in-out infinite; filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));
   }
-  .card-body{padding:14px 16px 16px; display:flex; flex-direction:column; flex:1;}
-  .card-body h3{font-size:1.08rem; margin-bottom:6px;}
-  .card-body p.summary{font-size:.9rem; color:var(--soft); flex:1; margin-bottom:10px;}
-  .tags{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;}
-  .tag{font-size:.75rem; padding:3px 10px; border-radius:999px; font-weight:600;}
-  .tag.time{background:var(--sky); color:#3E6E96;}
-  .tag.diff{background:var(--mint); color:#3E7A5C;}
-  .tag.type{background:var(--lilac); color:#6E5A92;}
+  .card-img .img-credit{
+    position:absolute; left:0; right:0; bottom:0; font-size:.62rem; color:#fff;
+    background:linear-gradient(transparent, rgba(0,0,0,.55)); padding:14px 10px 4px;
+  }
+  .from-badge{
+    position:absolute; top:12px; left:12px; background:var(--gold); color:var(--dark);
+    font-size:.72rem; font-weight:800; border-radius:999px; padding:4px 12px;
+    box-shadow:0 3px 8px rgba(0,0,0,.25);
+  }
+  .card-body{padding:16px 18px 18px; display:flex; flex-direction:column; flex:1;}
+  .card-body h3{font-size:1.1rem; margin-bottom:6px; color:var(--dark);}
+  .card-body p.summary{font-size:.88rem; color:var(--soft); flex:1; margin-bottom:12px;}
+  .tags{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;}
+  .tag{font-size:.73rem; padding:4px 11px; border-radius:999px; font-weight:700;}
+  .tag.time{background:#E8F3DC; color:var(--leaf);}
+  .tag.diff{background:#FDEEDA; color:var(--rust);}
+  .tag.type{background:#E3EEF2; color:var(--slate);}
   .view-btn{
-    align-self:flex-start; background:var(--accent); color:#fff; border:none;
-    border-radius:10px; padding:9px 18px; font-size:.9rem; cursor:pointer; font-family:inherit;
+    align-self:flex-start; background:linear-gradient(135deg, var(--orange), var(--rust)); color:#fff; border:none;
+    border-radius:12px; padding:10px 20px; font-size:.9rem; cursor:pointer; font-family:inherit; font-weight:700;
+    transition:transform .15s ease, box-shadow .15s ease;
   }
-  .view-btn:hover{background:var(--accent-dark);}
+  .view-btn:hover{transform:translateY(-2px); box-shadow:0 8px 18px rgba(200,76,31,.35);}
   .empty-note{
-    background:#FFF3E6; border:1px dashed var(--accent); border-radius:var(--radius);
-    padding:18px; color:var(--accent-dark); font-size:.95rem;
+    background:#FDF3E2; border:1.5px dashed var(--clay); border-radius:var(--radius);
+    padding:20px; color:var(--brown); font-size:.95rem; grid-column:1/-1; animation:fadeIn .4s ease both;
   }
 
   /* detail panel */
   #detail{
-    background:var(--card); border-radius:var(--radius); border:1px solid #F4E9DD;
-    box-shadow:0 3px 12px rgba(200,160,120,.14); overflow:hidden; display:none;
+    background:var(--card); border-radius:var(--radius); border:1px solid #EFEAD8;
+    box-shadow:0 12px 32px rgba(34,43,22,.12); overflow:hidden; display:none;
   }
-  #detail.open{display:block;}
-  .detail-head{display:flex; align-items:center; gap:14px; padding:18px 22px; background:var(--peach);}
-  .detail-head .big{font-size:2.4rem;}
-  .detail-head h3{font-size:1.25rem;}
-  .detail-head p{font-size:.88rem; color:var(--soft);}
+  #detail.open{display:block; animation:fadeUp .55s ease both;}
+  .detail-hero{position:relative; height:220px;}
+  .detail-hero img{width:100%; height:100%; object-fit:cover;}
+  .detail-hero .overlay{
+    position:absolute; inset:0; background:linear-gradient(transparent 30%, rgba(34,43,22,.85));
+    display:flex; align-items:flex-end; padding:20px 24px; color:#fff;
+  }
+  .detail-hero h3{font-size:1.5rem; text-shadow:0 2px 8px rgba(0,0,0,.4);}
+  .detail-hero .meta{font-size:.85rem; color:var(--pale-yellow); margin-top:4px;}
+  .detail-hero .from{
+    position:absolute; top:16px; left:16px; background:var(--gold); color:var(--dark);
+    font-size:.78rem; font-weight:800; border-radius:999px; padding:5px 14px;
+  }
   .detail-cols{display:grid; grid-template-columns:1fr 1.4fr; gap:0;}
-  @media(max-width:640px){.detail-cols{grid-template-columns:1fr;}}
-  .detail-col{padding:18px 22px;}
-  .detail-col + .detail-col{border-left:1px solid #F4E9DD;}
-  @media(max-width:640px){.detail-col + .detail-col{border-left:none; border-top:1px solid #F4E9DD;}}
-  .detail-col h4{font-size:1rem; margin-bottom:10px; color:var(--accent-dark);}
+  @media(max-width:680px){.detail-cols{grid-template-columns:1fr;}}
+  .detail-col{padding:20px 24px;}
+  .detail-col + .detail-col{border-left:1px solid #F2EDDC;}
+  @media(max-width:680px){.detail-col + .detail-col{border-left:none; border-top:1px solid #F2EDDC;}}
+  .detail-col h4{font-size:1rem; margin-bottom:12px; color:var(--leaf); text-transform:uppercase; letter-spacing:.06em; font-size:.85rem;}
   .ing-list{list-style:none;}
-  .ing-list li{padding:6px 0 6px 24px; position:relative; font-size:.93rem; border-bottom:1px dashed #F2E8DE;}
-  .ing-list li::before{content:"🥄"; position:absolute; left:0; font-size:.8rem;}
+  .ing-list li{padding:7px 0 7px 26px; position:relative; font-size:.92rem; border-bottom:1px dashed #EFE8D2;}
+  .ing-list li::before{content:"🌿"; position:absolute; left:0; font-size:.8rem;}
   .steps{counter-reset:step; list-style:none;}
-  .steps li{
-    counter-increment:step; padding:8px 0 8px 38px; position:relative; font-size:.93rem;
-  }
+  .steps li{counter-increment:step; padding:9px 0 9px 40px; position:relative; font-size:.93rem;}
   .steps li::before{
-    content:counter(step); position:absolute; left:0; top:8px;
-    width:26px; height:26px; border-radius:50%; background:var(--mint);
-    color:#3E7A5C; font-weight:700; font-size:.85rem;
+    content:counter(step); position:absolute; left:0; top:9px;
+    width:27px; height:27px; border-radius:50%; background:var(--leaf);
+    color:#fff; font-weight:800; font-size:.85rem;
     display:flex; align-items:center; justify-content:center;
   }
-  .cal-box{
-    margin-top:14px; background:var(--sky); border-radius:12px; padding:12px 16px;
-    display:flex; align-items:center; gap:10px; font-size:.95rem;
+  .cal-strip{
+    margin-top:16px; background:linear-gradient(135deg, var(--cream), #FAF6DF); border-radius:14px;
+    padding:14px 18px; display:flex; align-items:center; gap:10px; font-size:.95rem;
+    border:1px solid #EAE2BC;
   }
-  .cal-box strong{color:#3E6E96; font-size:1.15rem;}
-  .cal-note{font-size:.8rem; color:var(--soft); margin-top:6px;}
-  .close-detail{margin-top:14px; background:#EFE9F7; color:#6E5A92; border:none; border-radius:10px; padding:8px 16px; cursor:pointer; font-family:inherit; font-size:.88rem;}
+  .cal-strip strong{color:var(--rust); font-size:1.2rem;}
+  .cal-note{font-size:.78rem; color:var(--soft); margin-top:6px;}
+  .close-detail{margin-top:16px; background:var(--slate); color:#fff; border:none; border-radius:12px; padding:9px 18px; cursor:pointer; font-family:inherit; font-size:.88rem; font-weight:600;}
+  .credit-line{font-size:.75rem; color:var(--soft); margin-top:10px;}
+  .credit-line a{color:var(--slate); font-weight:600;}
 
-  /* smart picks result */
+  /* smart picks */
   #pick-result{
-    background:var(--mint); border-radius:var(--radius); padding:16px 20px; margin-top:16px;
-    display:none; align-items:center; gap:14px; flex-wrap:wrap;
+    background:linear-gradient(135deg, #EAF4DC, #FDF3E2); border:1px solid #DFE9C4;
+    border-radius:var(--radius); padding:18px 22px; margin-top:18px;
+    display:none; align-items:center; gap:16px; flex-wrap:wrap;
   }
-  #pick-result.show{display:flex;}
-  #pick-result .emoji{font-size:2.2rem;}
+  #pick-result.show{display:flex; animation:fadeUp .5s ease both;}
+  #pick-result img{width:76px; height:76px; border-radius:16px; object-fit:cover; box-shadow:0 6px 16px rgba(34,43,22,.18);}
   #pick-result button{margin-left:auto;}
-  .hint-box{background:#FFF7EE; border-left:4px solid var(--accent); border-radius:8px; padding:12px 16px; margin-top:14px; font-size:.9rem; color:var(--soft);}
+  .hint-box{background:#FFF8E8; border-left:4px solid var(--gold); border-radius:10px; padding:14px 18px; margin-top:16px; font-size:.9rem; color:var(--brown); animation:fadeUp .6s ease both;}
+  .ai-suggest{
+    background:var(--dark); color:var(--cream); border-radius:14px; padding:14px 18px;
+    margin-top:16px; font-size:.9rem; display:flex; gap:12px; align-items:flex-start;
+  }
+  .ai-suggest .dot{width:10px; height:10px; border-radius:50%; background:var(--lime); margin-top:6px; flex-shrink:0; animation:pulseGlow 2s ease-in-out infinite;}
 
-  footer{text-align:center; color:var(--soft); font-size:.85rem; padding:0 20px 30px;}
+  footer{text-align:center; color:var(--soft); font-size:.82rem; padding:0 20px 40px;}
+  footer a{color:var(--slate);}
+
+  /* skeleton shimmer while images load */
+  .img-load{background:linear-gradient(90deg,#EFEAD8 25%,#F7F3E4 50%,#EFEAD8 75%); background-size:800px 100%; animation:shimmer 1.2s linear infinite;}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="crescent">🌙</div>
-  <h1>Ramadan Recipe Suggestion Board</h1>
-  <p>Easy Malaysian meal ideas for buka puasa &amp; sahur — pick, read, cook.</p>
+  <div class="stars">
+    <span>✦</span><span>✧</span><span>✦</span><span>✧</span>
+  </div>
+  <div class="moon">🌙</div>
+  <div class="lantern">🏮</div>
+  <div class="inner">
+    <h1>Ramadan Recipe Suggestion Board</h1>
+    <p>Viral Malaysian recipes from your favourite creators — for buka puasa &amp; sahur</p>
+    <div class="badge">🔥 Featuring real viral recipes from Khairul Aming, Che Nom, Che Sayang Kitchen &amp; Sheila Rusly</div>
+  </div>
 </header>
 
 <main>
 
   <section id="section-board" aria-label="Today's Suggestions">
-    <div class="section-title"><h2>🍛 Today's Suggestions</h2></div>
-    <p class="section-sub">A quick set of simple Ramadan recipes for today. Tap one to see the full easy recipe below.</p>
+    <div id="summary">
+      <div class="icon">📋</div>
+      <span id="summary-text"></span>
+    </div>
+    <div class="section-head" style="margin-top:34px;">
+      <h2>🍛 Today's Suggestions</h2>
+      <span class="pill" id="count-pill"></span>
+    </div>
+    <p class="section-sub">Real viral recipes from Malaysian cooking influencers. Tap a card to see the easy version below.</p>
     <div class="chip-group-label">Quick filter — recipes update instantly:</div>
     <div class="chip-row" id="quick-filters">
       <button class="chip active" data-filter="all">Show all</button>
@@ -152,27 +238,31 @@
   </section>
 
   <section id="section-detail" aria-label="Recipe Detail">
-    <div class="section-title"><h2>📖 Recipe Detail</h2></div>
-    <p class="section-sub">The recipe you picked, in a simple step-by-step format.</p>
+    <div class="section-head"><h2>📖 Recipe Detail</h2><span class="pill">easy version</span></div>
+    <p class="section-sub">The recipe you picked, simplified into a step-by-step template.</p>
     <div id="detail-empty" class="empty-note">👆 Pick a recipe from Today's Suggestions above and its full details will appear here.</div>
     <div id="detail">
-      <div class="detail-head">
-        <span class="big" id="d-emoji">🍲</span>
-        <div>
-          <h3 id="d-name"></h3>
-          <p id="d-meta"></p>
+      <div class="detail-hero">
+        <img id="d-img" src="" alt="">
+        <span class="from" id="d-from"></span>
+        <div class="overlay">
+          <div>
+            <h3 id="d-name"></h3>
+            <div class="meta" id="d-meta"></div>
+          </div>
         </div>
       </div>
       <div class="detail-cols">
         <div class="detail-col">
           <h4>🧺 Ingredients (simplified)</h4>
           <ul class="ing-list" id="d-ingredients"></ul>
-          <div class="cal-box">🔥 Estimated calories: <strong id="d-cal"></strong></div>
-          <p class="cal-note">Rough guide per serving, based on typical portions — use it as an estimate only.</p>
+          <div class="cal-strip">🔥 Estimated calories: <strong id="d-cal"></strong></div>
+          <p class="cal-note">Rough guide per serving — estimate only, not a nutrition label.</p>
         </div>
         <div class="detail-col">
           <h4>👩‍🍳 Steps</h4>
           <ol class="steps" id="d-steps"></ol>
+          <p class="credit-line" id="d-credit"></p>
           <button class="close-detail" id="close-detail">Close recipe</button>
         </div>
       </div>
@@ -180,13 +270,15 @@
   </section>
 
   <section id="section-smart" aria-label="Smart Picks">
-    <div class="section-title"><h2>✨ Smart Picks</h2></div>
+    <div class="section-head"><h2>✨ Smart Picks</h2><span class="pill">match me</span></div>
     <p class="section-sub">Tell us how you feel and what you have — we'll match a recipe from today's board. Your choices also filter the cards above.</p>
+
+    <div class="ai-suggest"><span class="dot"></span><span>Like the "AI suggest" card in a meal app: pick your mood, your time limit, and what's in the kitchen — the board above updates live and we highlight the best match.</span></div>
 
     <div class="chip-group-label">1. How do you feel right now?</div>
     <div class="chip-row" id="mood-row">
       <button class="chip" data-mood="tired">😴 Tired — keep it easy</button>
-      <button class="chip" data-mood="hungry">🍽️ Really hungry — want something filling</button>
+      <button class="chip" data-mood="hungry">🍽️ Really hungry — something filling</button>
       <button class="chip" data-mood="light">🌿 Want something light</button>
       <button class="chip" data-mood="cheerful">😄 Feeling cheerful — something special</button>
     </div>
@@ -198,18 +290,18 @@
       <button class="chip" data-time="60">🕐 1 hour or more</button>
     </div>
 
-    <div class="chip-group-label">3. What's in your kitchen? (optional hints)</div>
+    <div class="chip-group-label">3. What's in your kitchen? (optional)</div>
     <div class="chip-row" id="ing-row">
       <button class="chip" data-ing="rice">🍚 Rice</button>
       <button class="chip" data-ing="chicken">🍗 Chicken</button>
       <button class="chip" data-ing="egg">🥚 Eggs</button>
-      <button class="chip" data-ing="flour">🌾 Flour / bread</button>
+      <button class="chip" data-ing="prawn">🍤 Prawns / popia skin</button>
     </div>
 
     <button class="view-btn" id="match-btn">Find my match ✨</button>
 
     <div id="pick-result">
-      <span class="emoji" id="pr-emoji">🍲</span>
+      <img id="pr-img" src="" alt="">
       <div>
         <strong id="pr-name"></strong>
         <p id="pr-why" style="font-size:.9rem; color:var(--soft);"></p>
@@ -218,156 +310,261 @@
     </div>
 
     <div class="hint-box">
-      💡 <strong>Ingredient availability hints:</strong> No rice? Try the Roti John or Telur Bungkus. No chicken? Dates &amp; Smoothie or Telur Bungkus work great. Only eggs and bread at home? Telur Bungkus is your friend.
+      💡 <strong>Ingredient availability hints:</strong> No rice? Ayam Bakar Mayonis or Telur Bungkus work great. No chicken? Udang Mercun if you have prawns, or the quick MAGGI Kari Goreng. Only eggs at home? Telur Bungkus is your friend.
     </div>
   </section>
 
 </main>
 
-<footer>🌙 Sample recipes for demonstration only — everything on this board is made-up example data and resets when you leave.</footer>
+<footer>
+  🌙 Demo board. Recipe concepts credited to their creators — videos and full recipes live on their own channels.
+  Photos: Wikimedia Commons (free licences). Nutritional values are sample estimates only, not real data.
+</footer>
 
 <script>
+const IMG = {
+  nasilemak:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Nasi_Lemak%2C_Mamak%2C_Sydney.jpg/960px-Nasi_Lemak%2C_Mamak%2C_Sydney.jpg",
+  curry:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Chicken_Curry_%28490198749%29.jpg/960px-Chicken_Curry_%28490198749%29.jpg",
+  porridge:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Chinese_rice_congee.jpg/960px-Chinese_rice_congee.jpg",
+  meegoreng:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Mee_Goreng_Mamak.jpg/960px-Mee_Goreng_Mamak.jpg",
+  dates:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Bowl_of_Dates.jpg/960px-Bowl_of_Dates.jpg",
+  smoothie:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Banana_Milkshake.jpg/960px-Banana_Milkshake.jpg",
+  sandwich:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Ham_%26_cheese_toasted_sandwich_-_Potatoast_2026-05-02.jpg/960px-Ham_%26_cheese_toasted_sandwich_-_Potatoast_2026-05-02.jpg",
+  friedchicken:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Fried_Crispy_chicken.jpg/960px-Fried_Crispy_chicken.jpg",
+  eggs:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Scrambled_egg.jpg/960px-Scrambled_egg.jpg",
+  rendang:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Beef_Rendang..JPG/960px-Beef_Rendang..JPG"
+};
+
 const RECIPES = [
   {
-    id: "bubur",
-    name: "Bubur Lambuk Kampung Style",
-    emoji: "🥣",
-    imgBg: "#FFE8D6",
-    summary: "A warm, comforting rice porridge with chicken and soft spices — the classic Malaysian masjid buka puasa dish.",
-    time: 60, difficulty: "Medium", type: "Buka puasa", mood: ["hungry","cheerful"], ingredients: ["rice","chicken"],
-    tagFilter: ["sahur"],
-    ingredientList: ["1 cup rice, rinsed","200g chicken breast, diced","1 onion + 3 garlic cloves, sliced","1 inch ginger, julienned","2 tbsp fried shallots","1 tsp white pepper + salt to taste","1.5 litres water","Spring onions & coriander, chopped"],
-    steps: [
-      "Fry onion, garlic and ginger in a little oil until fragrant.",
-      "Add chicken and cook until it changes colour, about 3 minutes.",
-      "Add rice and water, then simmer on low for 35–40 minutes, stirring now and then.",
-      "Season with salt and white pepper; add more water if it gets too thick.",
-      "Serve warm topped with fried shallots, spring onion and coriander."
+    id:"nasilemak", name:"Sambal Nasi Lemak Ayam Goreng Berempah",
+    creator:"Khairul Aming", platform:"TikTok / X — 30 Hari 30 Resepi",
+    img:IMG.nasilemak, credit:"Photo: Wikimedia Commons (example dish photo)",
+    emoji:"🍛",
+    summary:"His signature nasi lemak with fragrant basmathi, spicy berempah fried chicken and the famous sambal — the dish behind Malaysia's biggest sambal debate.",
+    time:100, difficulty:"Medium", type:"Buka puasa", mood:["hungry","cheerful"], ingredients:["rice","chicken"],
+    tagFilter:[],
+    ingredientList:["2 cups basmathi rice + coconut milk + pandan","600g chicken, marinated in berempah spice paste","8 dried chillies + 3 shallots + 2 garlic (blended, for sambal)","Ikan bilis (anchovies) & roasted peanuts","1 egg per person","Sugar, salt and a squeeze of tamarind for the sambal"],
+    steps:[
+      "Cook basmathi rice with coconut milk, pandan leaf and salt.",
+      "Blend dried chillies, shallots and garlic; fry the paste slowly until the oil separates — this 'tumis' step is the heart of the sambal.",
+      "Marinate chicken in the berempah spice paste for at least 30 minutes, then deep-fry until crispy.",
+      "Fry anchovies and peanuts, and boil the eggs.",
+      "Assemble: rice, sambal, chicken and all the sides. Serve right at maghrib."
     ],
-    calories: "≈ 320 kcal per bowl",
-    why: "Filling and warming — great when you're very hungry after a long day of fasting."
+    calories:"≈ 650 kcal per plate",
+    why:"A full celebratory spread — the ultimate 'impress the family' iftar centrepiece.",
+    source:"dapurviral / Khairul Aming's viral nasi lemak recipe"
   },
   {
-    id: "kurma",
-    name: "Ayam Masak Kurma Simple",
-    emoji: "🍗",
-    imgBg: "#DFF3E9",
-    summary: "Mild, sweet chicken kurma that comes together in one pot — gentle on the stomach for iftar.",
-    time: 45, difficulty: "Easy", type: "Buka puasa", mood: ["hungry","cheerful"], ingredients: ["rice","chicken"],
-    tagFilter: [],
-    ingredientList: ["400g chicken, cut into pieces","2 tbsp kurma powder (or 3 tbsp kurma paste)","1 potato, cubed","1 onion, blended with 2 garlic cloves","150ml coconut milk","1 tbsp cooking oil","Salt and a small piece of tamarind"],
-    steps: [
-      "Sauté the blended onion and garlic in oil until lightly golden.",
-      "Add kurma powder and stir for 30 seconds until aromatic.",
-      "Add chicken pieces and coat well with the paste for 2 minutes.",
-      "Add potato, 1 cup water and tamarind; simmer covered for 20 minutes.",
-      "Pour in coconut milk, add salt, and simmer 5 more minutes. Serve with rice."
+    id:"nyet", name:"Ayam Goreng Sambal Nyet Berapi",
+    creator:"Khairul Aming", platform:"TikTok / X — Sambal Nyet series",
+    img:IMG.friedchicken, credit:"Photo: Wikimedia Commons (example dish photo)",
+    emoji:"🔥",
+    summary:"Crispy fried chicken drowned in his legendary extra-hot Sambal Nyet — the sambal that sold millions of bottles.",
+    time:30, difficulty:"Easy", type:"Buka puasa", mood:["hungry","cheerful"], ingredients:["chicken"],
+    tagFilter:["fast"],
+    ingredientList:["600g chicken wings or thighs","Corn flour + egg for the crispy coat","4 tbsp sambal (use Sambal Nyet Berapi, or your own tumis sambal)","2 tbsp oil","Pinch of sugar to balance the heat"],
+    steps:[
+      "Coat chicken in seasoned egg and corn flour.",
+      "Deep-fry at medium-high heat until golden and crispy, about 10–12 minutes.",
+      "In a separate pan, warm the sambal with oil and a pinch of sugar.",
+      "Toss the hot fried chicken through the sambal until every piece is coated.",
+      "Serve immediately while the coating still crackles."
     ],
-    calories: "≈ 450 kcal per serving",
-    why: "Mildly spiced and hearty — comforting without being too heavy."
+    calories:"≈ 520 kcal per serving",
+    why:"Fast, fiery and famous — great when you want maximum flavour with minimum fuss.",
+    source:"Khairul Aming's Sambal Nyet recipe series"
   },
   {
-    id: "telur",
-    name: "Telur Bungkus (Egg Parcels)",
-    emoji: "🍳",
-    imgBg: "#E3F0FA",
-    summary: "Simple banana-leaf wrapped eggs with onion and chilli — a speedy roadside-style sahur favourite.",
-    time: 15, difficulty: "Easy", type: "Sahur", mood: ["tired","light"], ingredients: ["egg","flour"],
-    tagFilter: ["fast","easy","sahur"],
-    ingredientList: ["4 eggs","1 small onion, finely chopped","1 red chilli, sliced thin (optional)","1 spring onion, chopped","Pinch of salt and white pepper","Banana leaf or baking paper for wrapping"],
-    steps: [
-      "Beat the eggs with onion, chilli, spring onion, salt and pepper.",
-      "Heat a flat pan and lightly wilt the banana leaf over the flame.",
-      "Pour a ladle of egg mixture onto the leaf and fold into a parcel.",
-      "Cook 4–5 minutes per side on low heat until just set.",
-      "Eat warm with bread or plain rice — done in about 15 minutes."
+    id:"masakmerah", name:"Ayam Masak Merah ala Kenduri",
+    creator:"Che Nom", platform:"YouTube — CheNom (her most-viewed recipe, 8M+ views)",
+    img:IMG.curry, credit:"Photo: Wikimedia Commons (example dish photo)",
+    emoji:"🍅",
+    summary:"The festive favourite from her most-watched video — silky red gravy, fried chicken pieces, perfect over white rice at iftar.",
+    time:75, difficulty:"Medium", type:"Buka puasa", mood:["hungry","cheerful"], ingredients:["rice","chicken"],
+    tagFilter:[],
+    ingredientList:["1 whole chicken, cut into 12 pieces","10 dried chillies + 5 shallots + 3 garlic + 1 inch ginger (blended)","2 tbsp tomato ketchup + 1 tbsp chilli sauce","1 cup water + 1/2 cup oil for tumis","1 tomato, cut in wedges + 1 onion, sliced","Salt and sugar to taste"],
+    steps:[
+      "Marinate chicken lightly with turmeric and salt; fry until golden, set aside.",
+      "Blend the chilli, shallots, garlic and ginger into a smooth paste.",
+      "Tumis the paste in oil over low heat for 10–15 minutes until dark red and fragrant.",
+      "Add ketchup, chilli sauce and water; simmer 5 minutes.",
+      "Return the chicken, add tomato and onion, simmer 10 more minutes until the gravy clings. Serve with warm rice."
     ],
-    calories: "≈ 220 kcal for 2 parcels",
-    why: "Fastest option on the board — perfect when you're tired and short on time."
+    calories:"≈ 560 kcal per serving",
+    why:"Kenduri vibes at home — a comforting classic when you're cooking for the whole family.",
+    source:"Che Nom's 'Ayam Masak Merah' YouTube recipe"
   },
   {
-    id: "rotijohn",
-    name: "Roti John Mini",
-    emoji: "🥖",
-    imgBg: "#EFE9F7",
-    summary: "Toasted baguette halves with a cheesy egg-and-mince topping — a cheerful iftar treat to share.",
-    time: 30, difficulty: "Easy", type: "Buka puasa", mood: ["cheerful","hungry"], ingredients: ["egg","flour"],
-    tagFilter: ["fast","easy"],
-    ingredientList: ["1 small baguette, split lengthwise","3 eggs","150g chicken mince (or skip for veggie)","1 onion, finely chopped","2 tbsp mayonnaise + 1 tbsp chilli sauce","Grated cheese, a small handful","Butter for toasting"],
-    steps: [
-      "Mix eggs, mince, onion, mayo and chilli sauce into a thick paste.",
-      "Butter the baguette halves and toast cut-side down until golden.",
-      "Spread the egg mixture generously on the cut side.",
-      "Toast covered on low heat for 6–8 minutes until the topping sets.",
-      "Sprinkle cheese, toast 1 more minute, then slice to serve."
+    id:"butterchicken", name:"Creamy Butter Chicken Simple",
+    creator:"Che Nom", platform:"YouTube — CheNom (her famous RM7k video)",
+    img:IMG.curry, credit:"Photo: Wikimedia Commons (example dish photo)",
+    emoji:"🧈",
+    summary:"The recipe from her famously lucrative video — mild, creamy and kid-friendly, ready in under an hour.",
+    time:45, difficulty:"Easy", type:"Buka puasa", mood:["light","cheerful"], ingredients:["chicken","rice"],
+    tagFilter:[],
+    ingredientList:["500g chicken breast, cubed","3 tbsp butter","4 garlic cloves, minced","150ml evaporated milk + 100ml water","1 tbsp curry powder (meat curry, mild)","1 onion, sliced + 2 red chillies (optional)","Salt and 1 tsp sugar"],
+    steps:[
+      "Season chicken cubes and sear in half the butter until cooked; set aside.",
+      "Melt remaining butter, sauté garlic and onion until soft.",
+      "Add curry powder and stir 30 seconds until aromatic.",
+      "Pour in evaporated milk and water; simmer until slightly thick.",
+      "Return chicken, add chillies, season, and simmer 5 minutes. Serve with rice or bread."
     ],
-    calories: "≈ 380 kcal per half",
-    why: "Fun and celebratory — a nice pick when you're feeling cheerful."
+    calories:"≈ 480 kcal per serving",
+    why:"Creamy and gentle — a crowd-pleaser that won't upset anyone's stomach after a long fast.",
+    source:"Che Nom's 'Butter Chicken' YouTube recipe"
   },
   {
-    id: "smoothie",
-    name: "Kurma & Banana Smoothie",
-    emoji: "🥤",
-    imgBg: "#FFE8D6",
-    summary: "A two-minute blended drink with dates, banana and milk — the gentlest way to break your fast.",
-    time: 15, difficulty: "Easy", type: "Buka puasa", mood: ["light","tired"], ingredients: ["flour"],
-    tagFilter: ["fast","easy"],
-    ingredientList: ["5 kurma (dates), pitted","1 ripe banana","250ml fresh milk (or soy milk)","1/4 tsp cinnamon","2 ice cubes (optional)"],
-    steps: [
+    id:"bakarmayonis", name:"Ayam Bakar Mayonis (4 Ingredients!)",
+    creator:"Che Sayang Kitchen", platform:"TikTok @chesayang_kitchen — ~13M views",
+    img:IMG.friedchicken, credit:"Photo: Wikimedia Commons (example dish photo)",
+    emoji:"🍯",
+    summary:"The 4-ingredient miracle from his '2 Minit 1 Resepi' series — mayonnaise-marinated chicken with crackly sweet-spicy glaze.",
+    time:15, difficulty:"Easy", type:"Sahur", mood:["tired","cheerful"], ingredients:["chicken"],
+    tagFilter:["fast","easy","sahur"],
+    ingredientList:["500g chicken thighs","3 tbsp mayonnaise","1 tbsp sweet chilli or paprika powder","1 tbsp sweet soy sauce (kicap manis)","(Air fryer or oven — that's it!)"],
+    steps:[
+      "Mix mayonnaise, chilli powder and sweet soy sauce into a marinade.",
+      "Coat the chicken thighs fully; rest 10 minutes if you have time.",
+      "Air fry at 200°C for 10–12 minutes (or bake at 200°C for ~20 minutes), flipping halfway.",
+      "Brush with any leftover glaze in the last 2 minutes for a glossy finish.",
+      "Done — four ingredients, one tray, zero stress at sahur."
+    ],
+    calories:"≈ 430 kcal per serving",
+    why:"The easiest famous recipe on this board — perfect for tired sahur mornings.",
+    source:"Che Sayang Kitchen's viral 'Ayam Bakar Mayonis' TikTok"
+  },
+  {
+    id:"popiasate", name:"Popia Sate Bhalut Style",
+    creator:"Che Sayang Kitchen", platform:"TikTok @chesayang_kitchen — sate bhalut trend",
+    img:IMG.sandwich, credit:"Photo: Wikimedia Commons (example snack photo)",
+    emoji:"🌯",
+    summary:"His take on the viral sate bhalut — crispy popia-wrapped chicken satay parcels with peanut sauce, snackable at moreh.",
+    time:30, difficulty:"Medium", type:"Buka puasa", mood:["cheerful","light"], ingredients:["chicken","egg"],
+    tagFilter:["fast"],
+    ingredientList:["200g cooked chicken, shredded and tossed in satay spice","10 popia (spring roll) sheets","1 egg, beaten (for sealing)","Cucumber sticks","Peanut sauce for dipping"],
+    steps:[
+      "Toss shredded chicken with satay seasoning (or use leftover satay chicken).",
+      "Roll a spoonful of chicken and a cucumber stick into each popia sheet; seal with beaten egg.",
+      "Deep-fry on medium heat until golden and crisp, about 3–4 minutes each.",
+      "Drain well and serve warm with peanut sauce.",
+      "Great for moreh after terawih — everyone grabs their own parcel."
+    ],
+    calories:"≈ 310 kcal for 3 pieces",
+    why:"Fun, hand-held and trendy — a cheerful iftar or moreh snack to share.",
+    source:"Che Sayang Kitchen's 'Popia Sate' TikTok, inspired by the viral sate bhalut"
+  },
+  {
+    id:"udangmercun", name:"Udang Mercun (Firecracker Prawns)",
+    creator:"Sheila Rusly", platform:"YouTube / IG @sheilarusly_jspictures — viral Ramadan 2023",
+    img:IMG.eggs, credit:"Photo: Wikimedia Commons (example fried-snack photo)",
+    emoji:"🎆",
+    summary:"Whole prawns wrapped in popia skin so they 'explode' with juice when you bite — her viral buka puasa showstopper.",
+    time:30, difficulty:"Medium", type:"Buka puasa", mood:["cheerful","hungry"], ingredients:["prawn","egg"],
+    tagFilter:["fast"],
+    ingredientList:["12 large prawns, tails on, cleaned","6 popia sheets, halved","1 egg, beaten + corn flour for sealing","Thai sweet chilli sauce for dipping","Oil for deep-frying"],
+    steps:[
+      "Season the prawns lightly with pepper.",
+      "Wrap each prawn diagonally in popia skin, sealing the tip with egg and corn flour paste.",
+      "Deep-fry in hot oil until golden and blistered, about 3 minutes.",
+      "Drain and serve immediately with Thai sweet chilli sauce.",
+      "Bite carefully — the 'mercun' pop of hot juice is the whole point!"
+    ],
+    calories:"≈ 280 kcal for 4 pieces",
+    why:"A playful showstopper — perfect for a cheerful iftar spread that gets everyone talking.",
+    source:"Sheila Rusly's 'Udang Mercun' Ramadan recipe"
+  },
+  {
+    id:"bergedil", name:"Bergedil Tempe",
+    creator:"Sheila Rusly", platform:"Instagram @sheilarusly_jspictures — 500k+ views",
+    img:IMG.porridge, credit:"Photo: Wikimedia Commons (example side-dish photo)",
+    emoji:"🥔",
+    summary:"Her budget-friendly twist on bergedil — potato-and-tempe patties, crispy outside, soft inside, easy on the wallet.",
+    time:25, difficulty:"Easy", type:"Sahur", mood:["light","tired"], ingredients:["egg"],
+    tagFilter:["easy","sahur"],
+    ingredientList:["3 potatoes, boiled and mashed","1 piece tempe, steamed and crumbled","1 egg + 1 egg yolk (for binding and coating)","1 onion + 2 garlic, fried till soft","Salt, white pepper, a pinch of sugar","Oil for shallow frying"],
+    steps:[
+      "Mash the hot boiled potatoes; mix in crumbled tempe, fried aromatics and seasoning.",
+      "Shape into flat patties.",
+      "Dip each in beaten egg and shallow-fry until both sides are golden.",
+      "Drain on paper towel.",
+      "Serve with sambal and hot rice — or tuck into a sandwich for sahur."
+    ],
+    calories:"≈ 240 kcal for 2 pieces",
+    why:"Cheap, filling and easy — a gentle sahur side that pairs with anything.",
+    source:"Sheila Rusly's 'Bergedil Tempe' Instagram recipe"
+  },
+  {
+    id:"tomyam", name:"Tomyam Putih ala Restoran Thai",
+    creator:"Che Nom", platform:"YouTube — CheNom (1.1M views)",
+    img:IMG.porridge, credit:"Photo: Wikimedia Commons (example soup photo)",
+    emoji:"🍲",
+    summary:"Her creamy white tomyam — restaurant-quality, surprisingly simple, and light enough for a fast-breaking starter.",
+    time:30, difficulty:"Easy", type:"Buka puasa", mood:["light","hungry"], ingredients:["prawn"],
+    tagFilter:["fast","easy"],
+    ingredientList:["300g prawns or chicken slices","1 litre chicken stock","3 stalks serai (lemongrass), bruised + 4 kaffir lime leaves + 2 slices galangal","5 shallots, quartered","200ml evaporated milk","2 tbsp fish sauce + 1 tbsp sugar + lime juice","Red chillies and coriander to finish"],
+    steps:[
+      "Simmer the stock with lemongrass, lime leaves and galangal for 10 minutes.",
+      "Add shallots and prawns; cook until the prawns turn pink.",
+      "Pour in evaporated milk and warm through without boiling hard.",
+      "Season with fish sauce, sugar and lime juice — balance salty, sour, creamy.",
+      "Finish with chillies and coriander; serve hot to open the fast gently."
+    ],
+    calories:"≈ 220 kcal per bowl",
+    why:"Light but full of flavour — a soothing starter that wakes up the stomach after a long fast.",
+    source:"Che Nom's 'Tomyam Putih' YouTube recipe"
+  },
+  {
+    id:"kurmasmoothie", name:"Kurma & Banana Power Smoothie",
+    creator:"Board pick (inspired by everyone's 'start with dates' ritual)", platform:"Ramadan classic",
+    img:IMG.smoothie, credit:"Photo: Wikimedia Commons (example drink photo)",
+    emoji:"🥤",
+    summary:"A two-minute blended opener — dates, banana and milk, the gentlest way to break the fast before the main dish.",
+    time:15, difficulty:"Easy", type:"Buka puasa", mood:["light","tired"], ingredients:["egg"],
+    tagFilter:["fast","easy"],
+    ingredientList:["6 kurma (dates), pitted and soaked in warm milk","1 ripe banana","250ml fresh milk (or soy milk)","1/4 tsp cinnamon","2 ice cubes (optional)"],
+    steps:[
       "Soak the dates in warm milk for 3 minutes to soften.",
-      "Add dates, milk, banana and cinnamon to a blender.",
-      "Blend on high for about 40 seconds until smooth.",
-      "Pour over ice if you like it cold, and sip slowly at iftar."
+      "Blend dates, milk, banana and cinnamon until smooth.",
+      "Pour over ice if you like it cold.",
+      "Sip slowly with a few whole dates — the traditional sunnah opener."
     ],
-    calories: "≈ 260 kcal per glass",
-    why: "Light and gentle — a good choice when you want something easy on the stomach."
-  },
-  {
-    id: "kungfu",
-    name: "Mee Goreng Kungfu Sahur",
-    emoji: "🍜",
-    imgBg: "#DFF3E9",
-    summary: "A quick one-pan yellow noodle stir-fry with egg — filling enough to carry you through the day.",
-    time: 20, difficulty: "Easy", type: "Sahur", mood: ["hungry","tired"], ingredients: ["egg"],
-    tagFilter: ["fast","easy","sahur"],
-    ingredientList: ["200g yellow noodles, blanched","2 eggs","1 handful choy sum or cabbage","1 tbsp sweet soy sauce (kicap manis)","1 tbsp oyster sauce","2 garlic cloves, chopped","1 tbsp cooking oil"],
-    steps: [
-      "Blanch noodles in hot water for 2 minutes, drain well.",
-      "Scramble the eggs in hot oil, then push aside and fry the garlic.",
-      "Add vegetables and stir-fry for 1–2 minutes.",
-      "Add noodles, sweet soy sauce and oyster sauce; toss on high heat for 3 minutes.",
-      "Serve hot right before imsak — filling and fast."
-    ],
-    calories: "≈ 430 kcal per plate",
-    why: "Quick, hearty sahur fuel that keeps you full longer."
+    calories:"≈ 260 kcal per glass",
+    why:"The gentlest start — perfect when you're tired and want something kind to the stomach first.",
+    source:"Common Ramadan practice — dates and milk to break the fast"
   }
 ];
 
-let activeQuick = "all";
-let selMood = null, selTime = null, selIng = null;
-let selectedRecipe = null;
+let activeQuick="all", selMood=null, selTime=null, selIng=null, selectedRecipe=null;
 
 function matchesQuick(r){
-  if(activeQuick === "all") return true;
-  if(activeQuick === "fast") return r.time <= 30;
-  if(activeQuick === "easy") return r.difficulty === "Easy";
-  if(activeQuick === "sahur") return r.type === "Sahur" || r.tagFilter.includes("sahur");
+  if(activeQuick==="all") return true;
+  if(activeQuick==="fast") return r.time<=30;
+  if(activeQuick==="easy") return r.difficulty==="Easy";
+  if(activeQuick==="sahur") return r.type==="Sahur"||r.tagFilter.includes("sahur");
   return true;
 }
 function matchesSmart(r){
   if(selMood && !r.mood.includes(selMood)) return false;
   if(selTime){
-    if(selTime === "15" && r.time > 15) return false;
-    if(selTime === "30" && r.time > 30) return false;
-    if(selTime === "60" && r.time < 30) return false;
+    if(selTime==="15" && r.time>15) return false;
+    if(selTime==="30" && r.time>30) return false;
+    if(selTime==="60" && r.time<30) return false;
   }
   if(selIng && !r.ingredients.includes(selIng)) return false;
   return true;
 }
 
-function cardHTML(r){
-  return `<div class="card">
-    <div class="card-img" style="background:${r.imgBg}">${r.emoji}</div>
+function cardHTML(r,i){
+  return `<div class="card" style="animation-delay:${Math.min(i*70,500)}ms">
+    <div class="card-img img-load">
+      <img src="${r.img}" alt="${r.name}" loading="lazy" onload="this.parentElement.classList.remove('img-load')">
+      <span class="from-badge">👨‍🍳 ${r.creator}</span>
+      <span class="emoji-float">${r.emoji}</span>
+      <span class="img-credit">${r.credit}</span>
+    </div>
     <div class="card-body">
       <h3>${r.name}</h3>
       <p class="summary">${r.summary}</p>
@@ -382,109 +579,102 @@ function cardHTML(r){
 }
 
 function renderBoard(){
-  const board = document.getElementById("board");
-  const list = RECIPES.filter(r => matchesQuick(r) && matchesSmart(r));
-  if(list.length === 0){
-    board.innerHTML = `<div class="empty-note" style="grid-column:1/-1;">Hmm, nothing matches that combination. Try removing one of your Smart Picks choices — the "Show all" button above always works.</div>`;
+  const board=document.getElementById("board");
+  const list=RECIPES.filter(r=>matchesQuick(r)&&matchesSmart(r));
+  document.getElementById("count-pill").textContent=`${list.length} recipes`;
+  if(list.length===0){
+    board.innerHTML=`<div class="empty-note">Hmm, nothing matches that combination. Try removing one of your Smart Picks choices — "Show all" above always works.</div>`;
   } else {
-    board.innerHTML = list.map(cardHTML).join("");
+    board.innerHTML=list.map(cardHTML).join("");
   }
 }
 
 function updateSummary(){
-  const s = document.getElementById("summary-text");
-  const n = RECIPES.filter(r => matchesQuick(r) && matchesSmart(r)).length;
-  const bits = [];
-  if(activeQuick !== "all") bits.push(`quick filter "${activeQuick}"`);
+  const s=document.getElementById("summary-text");
+  const n=RECIPES.filter(r=>matchesQuick(r)&&matchesSmart(r)).length;
+  const bits=[];
+  if(activeQuick!=="all") bits.push(`quick filter "${activeQuick}"`);
   if(selMood) bits.push(`mood "${selMood}"`);
   if(selTime) bits.push(`time limit ${selTime} min`);
   if(selIng) bits.push(`ingredient "${selIng}"`);
-  s.innerHTML = `📋 <strong>${n} of ${RECIPES.length} recipes</strong> showing on the board` +
-    (bits.length ? ` (filtered by ${bits.join(", ")}).` : " — all of today's ideas.") +
-    (selectedRecipe ? ` &nbsp;✅ Selected: <strong>${selectedRecipe.name}</strong> (${selectedRecipe.calories}).` : "");
+  s.innerHTML=`<strong>${n} of ${RECIPES.length} viral recipes</strong> showing on the board`+
+    (bits.length?` (filtered by ${bits.join(", ")}).`:" — all of today's ideas.")+
+    (selectedRecipe?` &nbsp;✅ Selected: <strong>${selectedRecipe.name}</strong> by ${selectedRecipe.creator} (${selectedRecipe.calories}).`:"");
 }
 
 function openRecipe(id){
-  const r = RECIPES.find(x => x.id === id);
-  if(!r) return;
-  selectedRecipe = r;
-  document.getElementById("detail-empty").style.display = "none";
-  const d = document.getElementById("detail");
+  const r=RECIPES.find(x=>x.id===id); if(!r) return;
+  selectedRecipe=r;
+  document.getElementById("detail-empty").style.display="none";
+  const d=document.getElementById("detail");
+  d.classList.remove("open"); void d.offsetWidth; // restart animation
   d.classList.add("open");
-  document.getElementById("d-emoji").textContent = r.emoji;
-  document.getElementById("d-name").textContent = r.name;
-  document.getElementById("d-meta").textContent = `${r.type} • ${r.time} minutes • ${r.difficulty}`;
-  document.getElementById("d-ingredients").innerHTML = r.ingredientList.map(i=>`<li>${i}</li>`).join("");
-  document.getElementById("d-steps").innerHTML = r.steps.map(s=>`<li>${s}</li>`).join("");
-  document.getElementById("d-cal").textContent = r.calories;
-  document.getElementById("section-detail").scrollIntoView({behavior:"smooth", block:"start"});
+  document.getElementById("d-img").src=r.img;
+  document.getElementById("d-name").textContent=r.name;
+  document.getElementById("d-from").textContent=`👨‍🍳 ${r.creator}`;
+  document.getElementById("d-meta").textContent=`${r.platform} • ${r.type} • ${r.time} min • ${r.difficulty}`;
+  document.getElementById("d-ingredients").innerHTML=r.ingredientList.map(i=>`<li>${i}</li>`).join("");
+  document.getElementById("d-steps").innerHTML=r.steps.map(s=>`<li>${s}</li>`).join("");
+  document.getElementById("d-cal").textContent=r.calories;
+  document.getElementById("d-credit").innerHTML=`📌 Recipe concept from <strong>${r.creator}</strong> — ${r.source}. See their channel for the full original video.`;
+  document.getElementById("section-detail").scrollIntoView({behavior:"smooth",block:"start"});
   updateSummary();
 }
 
-document.getElementById("close-detail").addEventListener("click", ()=>{
-  const d = document.getElementById("detail");
-  d.classList.remove("open");
-  document.getElementById("detail-empty").style.display = "block";
-  selectedRecipe = null;
-  updateSummary();
+document.getElementById("close-detail").addEventListener("click",()=>{
+  document.getElementById("detail").classList.remove("open");
+  document.getElementById("detail-empty").style.display="block";
+  selectedRecipe=null; updateSummary();
 });
 
-// quick filters
 document.querySelectorAll("#quick-filters .chip").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
+  btn.addEventListener("click",()=>{
     document.querySelectorAll("#quick-filters .chip").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    activeQuick = btn.dataset.filter;
+    btn.classList.add("active"); activeQuick=btn.dataset.filter;
     renderBoard(); updateSummary();
   });
 });
 
-// smart picks chips
-function bindChips(rowId, attr, setter){
+function bindChips(rowId,attr,setter){
   document.querySelectorAll(`#${rowId} .chip`).forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const wasActive = btn.classList.contains("active");
+    btn.addEventListener("click",()=>{
+      const was=btn.classList.contains("active");
       document.querySelectorAll(`#${rowId} .chip`).forEach(b=>b.classList.remove("active"));
-      if(wasActive){ setter(null); }
-      else { btn.classList.add("active"); setter(btn.dataset[attr]); }
+      if(was){setter(null);} else {btn.classList.add("active"); setter(btn.dataset[attr]);}
       renderBoard(); updateSummary();
     });
   });
 }
-bindChips("mood-row","mood", v=>selMood=v);
-bindChips("time-row","time", v=>selTime=v);
-bindChips("ing-row","ing", v=>selIng=v);
+bindChips("mood-row","mood",v=>selMood=v);
+bindChips("time-row","time",v=>selTime=v);
+bindChips("ing-row","ing",v=>selIng=v);
 
-// match button
-document.getElementById("match-btn").addEventListener("click", ()=>{
-  const res = document.getElementById("pick-result");
-  const list = RECIPES.filter(matchesSmart);
-  if(list.length === 0){
+document.getElementById("match-btn").addEventListener("click",()=>{
+  const res=document.getElementById("pick-result");
+  const list=RECIPES.filter(matchesSmart);
+  if(list.length===0){
     res.classList.add("show");
-    document.getElementById("pr-emoji").textContent = "🤔";
-    document.getElementById("pr-name").textContent = "No match found";
-    document.getElementById("pr-why").textContent = "Try loosening a choice — for example pick 30 minutes instead of 15, or clear an ingredient.";
-    document.getElementById("pr-view").style.display = "none";
+    document.getElementById("pr-img").style.display="none";
+    document.getElementById("pr-name").textContent="No match found";
+    document.getElementById("pr-why").textContent="Try loosening a choice — e.g. 30 minutes instead of 15, or clear an ingredient.";
+    document.getElementById("pr-view").style.display="none";
     return;
   }
-  // friendliest match: prefer easy + fastest
-  const best = list.slice().sort((a,b)=> (a.difficulty==="Easy" ? 0:1)-(b.difficulty==="Easy" ?0:1) || a.time-b.time)[0];
+  const best=list.slice().sort((a,b)=>(a.difficulty==="Easy"?0:1)-(b.difficulty==="Easy"?0:1)||a.time-b.time)[0];
   res.classList.add("show");
-  document.getElementById("pr-emoji").textContent = best.emoji;
-  document.getElementById("pr-name").textContent = best.name;
-  document.getElementById("pr-why").textContent = best.why + ` (${best.time} min, ${best.difficulty.toLowerCase()}, ${best.calories}).`;
-  document.getElementById("pr-view").style.display = "";
-  document.getElementById("pr-view").onclick = ()=> openRecipe(best.id);
-  res.scrollIntoView({behavior:"smooth", block:"center"});
+  document.getElementById("pr-img").style.display="";
+  document.getElementById("pr-img").src=best.img;
+  document.getElementById("pr-name").textContent=`${best.name} — by ${best.creator}`;
+  document.getElementById("pr-why").textContent=best.why+` (${best.time} min, ${best.difficulty.toLowerCase()}, ${best.calories}).`;
+  document.getElementById("pr-view").style.display="";
+  document.getElementById("pr-view").onclick=()=>openRecipe(best.id);
+  res.scrollIntoView({behavior:"smooth",block:"center"});
 });
 
-// summary banner lives right above the board
-const summaryDiv = document.createElement("div");
-summaryDiv.id = "summary";
-summaryDiv.innerHTML = `<span class="icon">📋</span><span id="summary-text"></span>`;
-document.getElementById("section-board").prepend(summaryDiv);
+// scroll reveal for section headings
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible"); io.unobserve(e.target);}}),{threshold:.15});
+document.querySelectorAll(".section-head, .section-sub, #summary").forEach(el=>{el.classList.add("reveal"); io.observe(el);});
 
-// initial render — never empty: defaults to 6 sample recipes
 renderBoard();
 updateSummary();
 </script>
