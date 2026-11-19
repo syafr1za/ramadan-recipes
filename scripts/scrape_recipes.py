@@ -148,13 +148,15 @@ def main():
         existing = json.loads(DATA_FILE.read_text(encoding="utf-8"))
     curated = [r for r in existing if not str(r.get("id", "")).startswith("yt_")]
 
+    # merge: keep everything we already have, add genuinely new entries
     seen = {r["id"] for r in existing}
     fresh = [r for r in scraped if r["id"] not in seen]
-    # keep max 60 fresh entries, newest first
-    fresh.sort(key=lambda r: r.get("published") or "", reverse=True)
-    fresh = fresh[:60]
-
-    merged = curated + fresh
+    # union of existing + fresh, newest scraped first, capped at 80
+    merged = existing + fresh
+    scraped_all = [r for r in merged if str(r.get("id", "")).startswith("yt_")]
+    scraped_all.sort(key=lambda r: r.get("published") or "", reverse=True)
+    scraped_all = scraped_all[:80]
+    merged = [r for r in merged if not str(r.get("id", "")).startswith("yt_")] + scraped_all
     DATA_DIR.mkdir(exist_ok=True)
     DATA_FILE.write_text(json.dumps(merged, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"Wrote {len(merged)} recipes ({len(curated)} curated + {len(fresh)} new) → {DATA_FILE}")
