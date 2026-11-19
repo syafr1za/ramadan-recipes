@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ramadan Recipe Suggestion Board</title>
+<title>Papan Cadangan Resepi Malaysia</title>
 <style>
   :root{
     --lime:#71bd46; --pale-yellow:#ebd874; --leaf:#468731; --dark:#222b16;
@@ -19,11 +19,10 @@
     background: var(--bg); color: var(--text); line-height:1.55;
     overflow-x:hidden;
   }
-  /* entrance animations */
+  /* animations */
   @keyframes fadeUp{from{opacity:0; transform:translateY(24px);} to{opacity:1; transform:translateY(0);}}
   @keyframes fadeIn{from{opacity:0;} to{opacity:1;}}
   @keyframes floatY{0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);}}
-  @keyframes slowSpin{from{transform:rotate(0);} to{transform:rotate(360deg);}}
   @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(245,149,25,.35);} 50%{box-shadow:0 0 0 12px rgba(245,149,25,0);}}
   @keyframes shimmer{0%{background-position:-400px 0;} 100%{background-position:400px 0;}}
   .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
@@ -31,7 +30,7 @@
 
   header{
     position:relative; overflow:hidden; color:#fff; text-align:center;
-    padding:70px 20px 150px;
+    padding:60px 20px 140px;
     background: linear-gradient(140deg, var(--dark) 0%, var(--leaf) 55%, var(--lime) 100%);
   }
   header::after{
@@ -44,8 +43,8 @@
   .stars span:nth-child(2){top:22%; left:24%; font-size:1rem; animation-delay:1.2s;}
   .stars span:nth-child(3){top:14%; right:18%; font-size:1.3rem; animation-delay:2s;}
   .stars span:nth-child(4){top:30%; right:8%; font-size:1rem; animation-delay:.6s;}
-  .moon{position:absolute; top:34px; right:9%; font-size:3.4rem; animation:floatY 8s ease-in-out infinite; filter:drop-shadow(0 0 18px rgba(235,216,116,.7));}
-  .lantern{position:absolute; top:44px; left:7%; font-size:2.6rem; animation:floatY 7s ease-in-out infinite reverse;}
+  .leaf-float{position:absolute; top:34px; right:9%; font-size:3rem; animation:floatY 8s ease-in-out infinite; filter:drop-shadow(0 0 18px rgba(168,217,105,.7));}
+  .leaf-float2{position:absolute; top:44px; left:7%; font-size:2.4rem; animation:floatY 7s ease-in-out infinite reverse;}
   header .inner{position:relative; z-index:2; animation:fadeUp .8s ease both;}
   header h1{font-size:2.2rem; font-weight:800; letter-spacing:.5px; text-shadow:0 2px 12px rgba(0,0,0,.25);}
   header p{margin-top:10px; color:var(--cream); font-size:1.05rem;}
@@ -74,6 +73,22 @@
   }
   #summary-text{font-size:.98rem;}
 
+  /* search */
+  .search-wrap{position:relative; margin-bottom:16px;}
+  .search-wrap .mag{position:absolute; left:18px; top:50%; transform:translateY(-50%); font-size:1.1rem; opacity:.6;}
+  #search{
+    width:100%; padding:15px 46px 15px 50px; border-radius:16px; border:1.5px solid #E3DCC4;
+    background:#fff; font-family:inherit; font-size:1rem; color:var(--text);
+    box-shadow:0 6px 18px rgba(34,43,22,.08); transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  #search:focus{outline:none; border-color:var(--orange); box-shadow:0 6px 22px rgba(245,149,25,.22);}
+  #search-clear{
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    border:none; background:#EFEAD8; color:var(--soft); border-radius:50%;
+    width:28px; height:28px; cursor:pointer; font-size:.85rem; display:none;
+  }
+  #search-clear.show{display:block;}
+
   /* chips */
   .chip-row{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px;}
   .chip-group-label{font-size:.85rem; color:var(--soft); margin:12px 0 6px; font-weight:600;}
@@ -91,7 +106,6 @@
     background:var(--card); border-radius:var(--radius); overflow:hidden;
     box-shadow:0 8px 24px rgba(34,43,22,.10); border:1px solid #EFEAD8;
     display:flex; flex-direction:column;
-    opacity:0; transform:translateY(26px);
     transition:transform .25s ease, box-shadow .25s ease;
     animation:fadeUp .7s ease both;
   }
@@ -150,11 +164,9 @@
     font-size:.78rem; font-weight:800; border-radius:999px; padding:5px 14px;
   }
   .detail-cols{display:grid; grid-template-columns:1fr 1.4fr; gap:0;}
-  @media(max-width:680px){.detail-cols{grid-template-columns:1fr;}}
   .detail-col{padding:20px 24px;}
   .detail-col + .detail-col{border-left:1px solid #F2EDDC;}
-  @media(max-width:680px){.detail-col + .detail-col{border-left:none; border-top:1px solid #F2EDDC;}}
-  .detail-col h4{font-size:1rem; margin-bottom:12px; color:var(--leaf); text-transform:uppercase; letter-spacing:.06em; font-size:.85rem;}
+  .detail-col h4{font-size:.85rem; margin-bottom:12px; color:var(--leaf); text-transform:uppercase; letter-spacing:.06em;}
   .ing-list{list-style:none;}
   .ing-list li{padding:7px 0 7px 26px; position:relative; font-size:.92rem; border-bottom:1px dashed #EFE8D2;}
   .ing-list li::before{content:"🌿"; position:absolute; left:0; font-size:.8rem;}
@@ -196,8 +208,28 @@
   footer{text-align:center; color:var(--soft); font-size:.82rem; padding:0 20px 40px;}
   footer a{color:var(--slate);}
 
-  /* skeleton shimmer while images load */
   .img-load{background:linear-gradient(90deg,#EFEAD8 25%,#F7F3E4 50%,#EFEAD8 75%); background-size:800px 100%; animation:shimmer 1.2s linear infinite;}
+
+  /* ---------- mobile adaptivity ---------- */
+  @media(max-width:680px){
+    header{padding:44px 16px 120px;}
+    header h1{font-size:1.55rem;}
+    header p{font-size:.95rem;}
+    header .badge{font-size:.78rem; padding:7px 14px;}
+    main{padding:0 14px 56px;}
+    #board{grid-template-columns:1fr; gap:16px;}
+    .detail-hero{height:170px;}
+    .detail-hero h3{font-size:1.2rem;}
+    .detail-hero .meta{font-size:.78rem;}
+    .detail-col{padding:16px;}
+    .section-head h2{font-size:1.2rem;}
+    .chip{padding:8px 14px; font-size:.84rem;}
+    #pick-result button{margin-left:0; width:100%;}
+    .ai-suggest{font-size:.84rem;}
+  }
+  @media(max-width:380px){
+    header h1{font-size:1.3rem;}
+  }
 </style>
 </head>
 <body>
@@ -206,41 +238,48 @@
   <div class="stars">
     <span>✦</span><span>✧</span><span>✦</span><span>✧</span>
   </div>
-  <div class="moon">🌙</div>
-  <div class="lantern">🏮</div>
+  <div class="leaf-float">🌿</div>
+  <div class="leaf-float2">🥘</div>
   <div class="inner">
-    <h1>Ramadan Recipe Suggestion Board</h1>
-    <p>Viral Malaysian recipes from your favourite creators — for buka puasa &amp; sahur</p>
-    <div class="badge">🔥 Featuring real viral recipes from Khairul Aming, Che Nom, Che Sayang Kitchen &amp; Sheila Rusly</div>
+    <h1>Papan Cadangan Resepi Malaysia</h1>
+    <p>Resepi viral daripada kreator makanan tanah air — mudah, laju, sedap</p>
+    <div class="badge">🔥 Resepi sebenar daripada Khairul Aming, Che Nom, Che Sayang Kitchen, Sheila Rusly &amp; ramai lagi</div>
   </div>
 </header>
 
 <main>
 
-  <section id="section-board" aria-label="Today's Suggestions">
+  <section id="section-board" aria-label="Cadangan Hari Ini">
     <div id="summary">
       <div class="icon">📋</div>
       <span id="summary-text"></span>
     </div>
     <div class="section-head" style="margin-top:34px;">
-      <h2>🍛 Today's Suggestions</h2>
+      <h2>🍛 Cadangan Hari Ini</h2>
       <span class="pill" id="count-pill"></span>
     </div>
-    <p class="section-sub">Real viral recipes from Malaysian cooking influencers. Tap a card to see the easy version below.</p>
-    <div class="chip-group-label">Quick filter — recipes update instantly:</div>
+    <p class="section-sub">Resepi terkini daripada kreator masakan Malaysia. Ketek kad untuk lihat versi mudah di bawah.</p>
+
+    <div class="search-wrap">
+      <span class="mag">🔍</span>
+      <input id="search" type="search" placeholder="Cari nama menu, kreator, atau kata kunci… cth: ayam goreng, Che Nom, sambal" autocomplete="off">
+      <button id="search-clear" title="Kosongkan carian">✕</button>
+    </div>
+
+    <div class="chip-group-label">Tapis pantas — senarai berubah serta-merta:</div>
     <div class="chip-row" id="quick-filters">
-      <button class="chip active" data-filter="all">Show all</button>
-      <button class="chip" data-filter="fast">Under 30 min</button>
-      <button class="chip" data-filter="easy">Easy only</button>
-      <button class="chip" data-filter="sahur">Good for sahur</button>
+      <button class="chip active" data-filter="all">Semua</button>
+      <button class="chip" data-filter="fast">Bawah 30 minit</button>
+      <button class="chip" data-filter="easy">Senang sahaja</button>
+      <button class="chip" data-filter="sahur">Sesuai untuk sahur</button>
     </div>
     <div id="board"></div>
   </section>
 
-  <section id="section-detail" aria-label="Recipe Detail">
-    <div class="section-head"><h2>📖 Recipe Detail</h2><span class="pill">easy version</span></div>
-    <p class="section-sub">The recipe you picked, simplified into a step-by-step template.</p>
-    <div id="detail-empty" class="empty-note">👆 Pick a recipe from Today's Suggestions above and its full details will appear here.</div>
+  <section id="section-detail" aria-label="Butiran Resepi">
+    <div class="section-head"><h2>📖 Butiran Resepi</h2><span class="pill">versi mudah</span></div>
+    <p class="section-sub">Resepi yang anda pilih, dipermudahkan langkah demi langkah.</p>
+    <div id="detail-empty" class="empty-note">👆 Pilih satu resepi dari senarai di atas — butiran penuh akan muncul di sini.</div>
     <div id="detail">
       <div class="detail-hero">
         <img id="d-img" src="" alt="">
@@ -254,51 +293,51 @@
       </div>
       <div class="detail-cols">
         <div class="detail-col">
-          <h4>🧺 Ingredients (simplified)</h4>
+          <h4>🧺 Bahan-bahan (dipermudahkan)</h4>
           <ul class="ing-list" id="d-ingredients"></ul>
-          <div class="cal-strip">🔥 Estimated calories: <strong id="d-cal"></strong></div>
-          <p class="cal-note">Rough guide per serving — estimate only, not a nutrition label.</p>
+          <div class="cal-strip">🔥 Anggaran kalori: <strong id="d-cal"></strong></div>
+          <p class="cal-note">Anggaran kasar per hidangan — bukan angka pemakanan sebenar.</p>
         </div>
         <div class="detail-col">
-          <h4>👩‍🍳 Steps</h4>
+          <h4>👩‍🍳 Langkah-langkah</h4>
           <ol class="steps" id="d-steps"></ol>
           <p class="credit-line" id="d-credit"></p>
-          <button class="close-detail" id="close-detail">Close recipe</button>
+          <button class="close-detail" id="close-detail">Tutup resepi</button>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="section-smart" aria-label="Smart Picks">
-    <div class="section-head"><h2>✨ Smart Picks</h2><span class="pill">match me</span></div>
-    <p class="section-sub">Tell us how you feel and what you have — we'll match a recipe from today's board. Your choices also filter the cards above.</p>
+  <section id="section-smart" aria-label="Pilihan Bijak">
+    <div class="section-head"><h2>✨ Pilihan Bijak</h2><span class="pill">padankan saya</span></div>
+    <p class="section-sub">Beritahu perasaan anda dan apa yang ada di dapur — kami padankan resepi dari papan ini. Pilihan anda juga menapis kad di atas secara langsung.</p>
 
-    <div class="ai-suggest"><span class="dot"></span><span>Like the "AI suggest" card in a meal app: pick your mood, your time limit, and what's in the kitchen — the board above updates live and we highlight the best match.</span></div>
+    <div class="ai-suggest"><span class="dot"></span><span>Macam kad "AI suggest" dalam aplikasi makanan: pilih mood, had masa, dan bahan di dapur — papan di atas berubah serta-merta dan kami cadangkan padanan terbaik.</span></div>
 
-    <div class="chip-group-label">1. How do you feel right now?</div>
+    <div class="chip-group-label">1. Bagaimana perasaan anda sekarang?</div>
     <div class="chip-row" id="mood-row">
-      <button class="chip" data-mood="tired">😴 Tired — keep it easy</button>
-      <button class="chip" data-mood="hungry">🍽️ Really hungry — something filling</button>
-      <button class="chip" data-mood="light">🌿 Want something light</button>
-      <button class="chip" data-mood="cheerful">😄 Feeling cheerful — something special</button>
+      <button class="chip" data-mood="tired">😴 Penat — nak yang senang</button>
+      <button class="chip" data-mood="hungry">🍽️ Sangat lapar — nak yang mengenyangkan</button>
+      <button class="chip" data-mood="light">🌿 Nak yang ringan sahaja</button>
+      <button class="chip" data-mood="cheerful">😄 Rasa ceria — nak yang istimewa</button>
     </div>
 
-    <div class="chip-group-label">2. How much time do you have?</div>
+    <div class="chip-group-label">2. Berapa banyak masa anda ada?</div>
     <div class="chip-row" id="time-row">
-      <button class="chip" data-time="15">⏱️ 15 minutes</button>
-      <button class="chip" data-time="30">🕒 30 minutes</button>
-      <button class="chip" data-time="60">🕐 1 hour or more</button>
+      <button class="chip" data-time="15">⏱️ 15 minit</button>
+      <button class="chip" data-time="30">🕒 30 minit</button>
+      <button class="chip" data-time="60">🕐 1 jam atau lebih</button>
     </div>
 
-    <div class="chip-group-label">3. What's in your kitchen? (optional)</div>
+    <div class="chip-group-label">3. Apa yang ada di dapur? (pilihan)</div>
     <div class="chip-row" id="ing-row">
-      <button class="chip" data-ing="rice">🍚 Rice</button>
-      <button class="chip" data-ing="chicken">🍗 Chicken</button>
-      <button class="chip" data-ing="egg">🥚 Eggs</button>
-      <button class="chip" data-ing="prawn">🍤 Prawns / popia skin</button>
+      <button class="chip" data-ing="rice">🍚 Nasi</button>
+      <button class="chip" data-ing="chicken">🍗 Ayam</button>
+      <button class="chip" data-ing="egg">🥚 Telur</button>
+      <button class="chip" data-ing="prawn">🍤 Udang / kulit popia</button>
     </div>
 
-    <button class="view-btn" id="match-btn">Find my match ✨</button>
+    <button class="view-btn" id="match-btn">Cari padanan saya ✨</button>
 
     <div id="pick-result">
       <img id="pr-img" src="" alt="">
@@ -306,19 +345,19 @@
         <strong id="pr-name"></strong>
         <p id="pr-why" style="font-size:.9rem; color:var(--soft);"></p>
       </div>
-      <button class="view-btn" id="pr-view">View recipe</button>
+      <button class="view-btn" id="pr-view">Lihat resepi</button>
     </div>
 
     <div class="hint-box">
-      💡 <strong>Ingredient availability hints:</strong> No rice? Ayam Bakar Mayonis or Telur Bungkus work great. No chicken? Udang Mercun if you have prawns, or the quick MAGGI Kari Goreng. Only eggs at home? Telur Bungkus is your friend.
+      💡 <strong>Petua ketersediaan bahan:</strong> Tiada nasi? Ayam Bakar Mayonis atau telur bungkus sesuai. Tiada ayam? Udang mercun kalau ada udang, atau mee goreng segera. Telur sahaja di rumah? Resepi berasaskan telur adalah kawan anda.
     </div>
   </section>
 
 </main>
 
 <footer>
-  🌙 Demo board. Recipe concepts credited to their creators — videos and full recipes live on their own channels.
-  Photos: Wikimedia Commons (free licences). Nutritional values are sample estimates only, not real data.
+  Demo paparan. Konsep resepi dikreditkan kepada kreator asal — video penuh berada di saluran masing-masing.
+  Foto: Wikimedia Commons &amp; thumbnail YouTube kreator. Anggaran kalori adalah contoh sahaja, bukan data sebenar.
 </footer>
 
 <script>
@@ -338,212 +377,212 @@ const IMG = {
 const BUILTIN_RECIPES = [
   {
     id:"nasilemak", name:"Sambal Nasi Lemak Ayam Goreng Berempah",
-    creator:"Khairul Aming", platform:"TikTok / X — 30 Hari 30 Resepi",
-    img:IMG.nasilemak, credit:"Photo: Wikimedia Commons (example dish photo)",
+    creator:"Khairul Aming", platform:"TikTok / X — siri 30 Hari 30 Resepi",
+    img:IMG.nasilemak, credit:"Foto: Wikimedia Commons (contoh foto hidangan)",
     emoji:"🍛",
-    summary:"His signature nasi lemak with fragrant basmathi, spicy berempah fried chicken and the famous sambal — the dish behind Malaysia's biggest sambal debate.",
-    time:100, difficulty:"Medium", type:"Buka puasa", mood:["hungry","cheerful"], ingredients:["rice","chicken"],
+    summary:"Nasi lemak basmathi wangi, ayam goreng berempah dan sambal legenda — hidangan di sebalik perdebatan sambal paling besar di Malaysia.",
+    time:100, difficulty:"Sederhana", type:"Makan tengah hari", mood:["hungry","cheerful"], ingredients:["rice","chicken"],
     tagFilter:[],
-    ingredientList:["2 cups basmathi rice + coconut milk + pandan","600g chicken, marinated in berempah spice paste","8 dried chillies + 3 shallots + 2 garlic (blended, for sambal)","Ikan bilis (anchovies) & roasted peanuts","1 egg per person","Sugar, salt and a squeeze of tamarind for the sambal"],
+    ingredientList:["2 cawan beras basmathi + santan + daun pandan","600g ayam, diperap dengan pes berempah","8 biji cili kering + 3 halia bawang + 2 bawang putih (dikisar, untuk sambal)","Ikan bilis & kacang tanah panggang","1 biji telur untuk setiap orang","Gula, garam dan sedikit asam keping untuk sambal"],
     steps:[
-      "Cook basmathi rice with coconut milk, pandan leaf and salt.",
-      "Blend dried chillies, shallots and garlic; fry the paste slowly until the oil separates — this 'tumis' step is the heart of the sambal.",
-      "Marinate chicken in the berempah spice paste for at least 30 minutes, then deep-fry until crispy.",
-      "Fry anchovies and peanuts, and boil the eggs.",
-      "Assemble: rice, sambal, chicken and all the sides. Serve right at maghrib."
+      "Masak nasi basmathi bersama santan, daun pandan dan garam.",
+      "Kisar cili kering, bawang dan bawang putih; tumis perlahan sehingga pecah minyak — inilah nadi sambal.",
+      "Perap ayam dengan pes berempah sekurang-kurangnya 30 minit, kemudian goreng sehingga rangup.",
+      "Goreng ikan bilis dan kacang, dan rebus telur.",
+      "Susun: nasi, sambal, ayam dan lauk sampingan. Hidang sementara panas."
     ],
-    calories:"≈ 650 kcal per plate",
-    why:"A full celebratory spread — the ultimate 'impress the family' iftar centrepiece.",
-    source:"dapurviral / Khairul Aming's viral nasi lemak recipe"
+    calories:"≈ 650 kcal sepinggan",
+    why:"Hidangan penuh yang mengkagumkan — pilihan utama untuk makan bersama keluarga.",
+    source:"Resepi nasi lemak viral Khairul Aming"
   },
   {
     id:"nyet", name:"Ayam Goreng Sambal Nyet Berapi",
-    creator:"Khairul Aming", platform:"TikTok / X — Sambal Nyet series",
-    img:IMG.friedchicken, credit:"Photo: Wikimedia Commons (example dish photo)",
+    creator:"Khairul Aming", platform:"TikTok / X — siri Sambal Nyet",
+    img:IMG.friedchicken, credit:"Foto: Wikimedia Commons (contoh foto hidangan)",
     emoji:"🔥",
-    summary:"Crispy fried chicken drowned in his legendary extra-hot Sambal Nyet — the sambal that sold millions of bottles.",
-    time:30, difficulty:"Easy", type:"Buka puasa", mood:["hungry","cheerful"], ingredients:["chicken"],
+    summary:"Ayam goreng rangup direndam dalam Sambal Nyet Berapi legenda — sambal yang terjual berjuta-juta botol.",
+    time:30, difficulty:"Mudah", type:"Makan tengah hari", mood:["hungry","cheerful"], ingredients:["chicken"],
     tagFilter:["fast"],
-    ingredientList:["600g chicken wings or thighs","Corn flour + egg for the crispy coat","4 tbsp sambal (use Sambal Nyet Berapi, or your own tumis sambal)","2 tbsp oil","Pinch of sugar to balance the heat"],
+    ingredientList:["600g ayam sayap atau paha","Tepung jagung + telur untuk salutan rangup","4 sb sambal (guna Sambal Nyet Berapi, atau sambal tumis sendiri)","2 sb minyak","Cubit gula untuk imbangi rasa pedas"],
     steps:[
-      "Coat chicken in seasoned egg and corn flour.",
-      "Deep-fry at medium-high heat until golden and crispy, about 10–12 minutes.",
-      "In a separate pan, warm the sambal with oil and a pinch of sugar.",
-      "Toss the hot fried chicken through the sambal until every piece is coated.",
-      "Serve immediately while the coating still crackles."
+      "Salut ayam dengan telur berperasa dan tepung jagung.",
+      "Goreng dengan api sederhana-tinggi sehingga keemasan dan rangup, lebih kurang 10–12 minit.",
+      "Dalam kuali lain, panaskan sambal bersama minyak dan cubit gula.",
+      "Gaul ayam goreng panas bersama sambal sehingga setiap keping bersalut.",
+      "Hidang serta-merta selagi salutannya masih berkerak."
     ],
-    calories:"≈ 520 kcal per serving",
-    why:"Fast, fiery and famous — great when you want maximum flavour with minimum fuss.",
-    source:"Khairul Aming's Sambal Nyet recipe series"
+    calories:"≈ 520 kcal sehidangan",
+    why:"Laju, pedas dan terkenal — rasa maksimum dengan usaha minimum.",
+    source:"Siri resepi Sambal Nyet Khairul Aming"
   },
   {
     id:"masakmerah", name:"Ayam Masak Merah ala Kenduri",
-    creator:"Che Nom", platform:"YouTube — CheNom (her most-viewed recipe, 8M+ views)",
-    img:IMG.curry, credit:"Photo: Wikimedia Commons (example dish photo)",
+    creator:"Che Nom", platform:"YouTube — CheNom (resepi paling banyak ditonton, 8J+ tontonan)",
+    img:IMG.curry, credit:"Foto: Wikimedia Commons (contoh foto hidangan)",
     emoji:"🍅",
-    summary:"The festive favourite from her most-watched video — silky red gravy, fried chicken pieces, perfect over white rice at iftar.",
-    time:75, difficulty:"Medium", type:"Buka puasa", mood:["hungry","cheerful"], ingredients:["rice","chicken"],
+    summary:"Kegemaran hari kenduri dari videonya paling viral — kuah merah lembut, ayam goreng, sesuai dengan nasi putih.",
+    time:75, difficulty:"Sederhana", type:"Makan tengah hari", mood:["hungry","cheerful"], ingredients:["rice","chicken"],
     tagFilter:[],
-    ingredientList:["1 whole chicken, cut into 12 pieces","10 dried chillies + 5 shallots + 3 garlic + 1 inch ginger (blended)","2 tbsp tomato ketchup + 1 tbsp chilli sauce","1 cup water + 1/2 cup oil for tumis","1 tomato, cut in wedges + 1 onion, sliced","Salt and sugar to taste"],
+    ingredientList:["1 ekor ayam, dipotong 12","10 cili kering + 5 bawang merah + 3 bawang putih + 1 inci halia (dikisar)","2 sb sos tomato + 1 sb sos cili","1 cawan air + 1/2 cawan minyak untuk tumis","1 biji tomato, dipotong juring + 1 biji bawang besar, dihiris","Garam dan gula secukup rasa"],
     steps:[
-      "Marinate chicken lightly with turmeric and salt; fry until golden, set aside.",
-      "Blend the chilli, shallots, garlic and ginger into a smooth paste.",
-      "Tumis the paste in oil over low heat for 10–15 minutes until dark red and fragrant.",
-      "Add ketchup, chilli sauce and water; simmer 5 minutes.",
-      "Return the chicken, add tomato and onion, simmer 10 more minutes until the gravy clings. Serve with warm rice."
+      "Perap ayam dengan kunyit dan garam; goreng hingga keemasan, ketepikan.",
+      "Kisar cili, bawang, bawang putih dan halia hingga halus.",
+      "Tumis pes dengan minyak atas api kecil 10–15 minit sehingga merah gelap dan wangi.",
+      "Masukkan sos tomato, sos cili dan air; rebus 5 minit.",
+      "Masukkan ayam, tomato dan bawang; rebus 10 minit sehingga kuah melekat. Hidang dengan nasi panas."
     ],
-    calories:"≈ 560 kcal per serving",
-    why:"Kenduri vibes at home — a comforting classic when you're cooking for the whole family.",
-    source:"Che Nom's 'Ayam Masak Merah' YouTube recipe"
+    calories:"≈ 560 kcal sehidangan",
+    why:"Suasana kenduri di rumah — klasik yang memujukan hati untuk seluruh keluarga.",
+    source:"Resepi 'Ayam Masak Merah' YouTube Che Nom"
   },
   {
-    id:"butterchicken", name:"Creamy Butter Chicken Simple",
-    creator:"Che Nom", platform:"YouTube — CheNom (her famous RM7k video)",
-    img:IMG.curry, credit:"Photo: Wikimedia Commons (example dish photo)",
+    id:"butterchicken", name:"Creamy Butter Chicken Mudah",
+    creator:"Che Nom", platform:"YouTube — CheNom (video terkenalnya)",
+    img:IMG.curry, credit:"Foto: Wikimedia Commons (contoh foto hidangan)",
     emoji:"🧈",
-    summary:"The recipe from her famously lucrative video — mild, creamy and kid-friendly, ready in under an hour.",
-    time:45, difficulty:"Easy", type:"Buka puasa", mood:["light","cheerful"], ingredients:["chicken","rice"],
+    summary:"Resepi dari videonya yang masyhur — lembut, berkrim dan mesra kanak-kanak, siap dalam masa sejam.",
+    time:45, difficulty:"Mudah", type:"Makan tengah hari", mood:["light","cheerful"], ingredients:["chicken","rice"],
     tagFilter:[],
-    ingredientList:["500g chicken breast, cubed","3 tbsp butter","4 garlic cloves, minced","150ml evaporated milk + 100ml water","1 tbsp curry powder (meat curry, mild)","1 onion, sliced + 2 red chillies (optional)","Salt and 1 tsp sugar"],
+    ingredientList:["500g dada ayam, dipotong kiub","3 sb mentega","4 ulas bawang putih, dicincang","150ml susan sejat + 100ml air","1 sb serbuk kari (kari daging, tidak pedas)","1 biji bawang besar, dihiris + 2 cili merah (pilihan)","Garam dan 1 st gula"],
     steps:[
-      "Season chicken cubes and sear in half the butter until cooked; set aside.",
-      "Melt remaining butter, sauté garlic and onion until soft.",
-      "Add curry powder and stir 30 seconds until aromatic.",
-      "Pour in evaporated milk and water; simmer until slightly thick.",
-      "Return chicken, add chillies, season, and simmer 5 minutes. Serve with rice or bread."
+      "Perasakan kiub ayam dan bakar dengan separuh mentega sehingga masak; ketepikan.",
+      "Cairkan baki mentega, tumis bawang putih dan bawang hingga lembut.",
+      "Masukkan serbuk kari dan kacau 30 saat sehingga wangi.",
+      "Tuang susan sejat dan air; rebus sehingga sedikit pekat.",
+      "Masukkan semula ayam, cili, perasakan, dan rebus 5 minit. Hidang dengan nasi atau roti."
     ],
-    calories:"≈ 480 kcal per serving",
-    why:"Creamy and gentle — a crowd-pleaser that won't upset anyone's stomach after a long fast.",
-    source:"Che Nom's 'Butter Chicken' YouTube recipe"
+    calories:"≈ 480 kcal sehidangan",
+    why:"Berkrim dan lembut — kegemaran semua orang yang tidak membebankan perut.",
+    source:"Resepi 'Butter Chicken' YouTube Che Nom"
   },
   {
-    id:"bakarmayonis", name:"Ayam Bakar Mayonis (4 Ingredients!)",
-    creator:"Che Sayang Kitchen", platform:"TikTok @chesayang_kitchen — ~13M views",
-    img:IMG.friedchicken, credit:"Photo: Wikimedia Commons (example dish photo)",
+    id:"bakarmayonis", name:"Ayam Bakar Mayonis (4 Bahan Sahaja!)",
+    creator:"Che Sayang Kitchen", platform:"TikTok @chesayang_kitchen — ~13 juta tontonan",
+    img:IMG.friedchicken, credit:"Foto: Wikimedia Commons (contoh foto hidangan)",
     emoji:"🍯",
-    summary:"The 4-ingredient miracle from his '2 Minit 1 Resepi' series — mayonnaise-marinated chicken with crackly sweet-spicy glaze.",
-    time:15, difficulty:"Easy", type:"Sahur", mood:["tired","cheerful"], ingredients:["chicken"],
+    summary:"Keajaiban 4 bahan dari siri '2 Minit 1 Resepi' — ayam diperap mayonis dengan salut manis-pedas yang berkerak.",
+    time:15, difficulty:"Mudah", type:"Sarapan/Sahur", mood:["tired","cheerful"], ingredients:["chicken"],
     tagFilter:["fast","easy","sahur"],
-    ingredientList:["500g chicken thighs","3 tbsp mayonnaise","1 tbsp sweet chilli or paprika powder","1 tbsp sweet soy sauce (kicap manis)","(Air fryer or oven — that's it!)"],
+    ingredientList:["500g paha ayam","3 sb mayonis","1 sb serbuk cili manis atau paprika","1 sb kicap manis","(Air fryer atau ketuhar — itulah sahaja!)"],
     steps:[
-      "Mix mayonnaise, chilli powder and sweet soy sauce into a marinade.",
-      "Coat the chicken thighs fully; rest 10 minutes if you have time.",
-      "Air fry at 200°C for 10–12 minutes (or bake at 200°C for ~20 minutes), flipping halfway.",
-      "Brush with any leftover glaze in the last 2 minutes for a glossy finish.",
-      "Done — four ingredients, one tray, zero stress at sahur."
+      "Campurkan mayonis, serbuk cili dan kicap manis menjadi perapan.",
+      "Salut paha ayam sepenuhnya; rehatkan 10 minit jika ada masa.",
+      "Air fry pada 200°C selama 10–12 minit (atau bakar 200°C ~20 minit), dibalikkan separuh jalan.",
+      "Sapukan baki perapan pada 2 minit terakhir untuk kilauan berkilat.",
+      "Siap — empat bahan, satu bekas, tanpa tekanan."
     ],
-    calories:"≈ 430 kcal per serving",
-    why:"The easiest famous recipe on this board — perfect for tired sahur mornings.",
-    source:"Che Sayang Kitchen's viral 'Ayam Bakar Mayonis' TikTok"
+    calories:"≈ 430 kcal sehidangan",
+    why:"Resepi terkenal paling senang di papan ini — sesuai untuk waktu yang penat.",
+    source:"TikTok 'Ayam Bakar Mayonis' viral Che Sayang Kitchen"
   },
   {
-    id:"popiasate", name:"Popia Sate Bhalut Style",
-    creator:"Che Sayang Kitchen", platform:"TikTok @chesayang_kitchen — sate bhalut trend",
-    img:IMG.sandwich, credit:"Photo: Wikimedia Commons (example snack photo)",
+    id:"popiasate", name:"Popia Sate Bhalut",
+    creator:"Che Sayang Kitchen", platform:"TikTok @chesayang_kitchen — trend sate bhalut",
+    img:IMG.sandwich, credit:"Foto: Wikimedia Commons (contoh foto snek)",
     emoji:"🌯",
-    summary:"His take on the viral sate bhalut — crispy popia-wrapped chicken satay parcels with peanut sauce, snackable at moreh.",
-    time:30, difficulty:"Medium", type:"Buka puasa", mood:["cheerful","light"], ingredients:["chicken","egg"],
+    summary:"Gaya viral sate bhalut — bungkusan popia rangup berisi ayam sate bersama kuah kacang, sesuai untuk snek.",
+    time:30, difficulty:"Sederhana", type:"Makan petang", mood:["cheerful","light"], ingredients:["chicken","egg"],
     tagFilter:["fast"],
-    ingredientList:["200g cooked chicken, shredded and tossed in satay spice","10 popia (spring roll) sheets","1 egg, beaten (for sealing)","Cucumber sticks","Peanut sauce for dipping"],
+    ingredientList:["200g ayam masak, diasak dan digaul dengan rempah sate","10 keping kulit popia","1 biji telur, dipukut (untuk gam)","Hiris timun","Kuah kacang untuk cicah"],
     steps:[
-      "Toss shredded chicken with satay seasoning (or use leftover satay chicken).",
-      "Roll a spoonful of chicken and a cucumber stick into each popia sheet; seal with beaten egg.",
-      "Deep-fry on medium heat until golden and crisp, about 3–4 minutes each.",
-      "Drain well and serve warm with peanut sauce.",
-      "Great for moreh after terawih — everyone grabs their own parcel."
+      "Gaul ayam suwir dengan rempah sate (atau gunakan ayam sate lebihan).",
+      "Gulung sesendok ayam dan hirisan timun dalam setiap kulit popia; gam dengan telur pukut.",
+      "Goreng api sederhana hingga keemasan dan rangup, lebih kurang 3–4 minit setiap satu.",
+      "Tos dengan baik dan hidang panas bersama kuah kacang.",
+      "Sesuai untuk snek petang — semua orang ambil satu bungkusan sendiri."
     ],
-    calories:"≈ 310 kcal for 3 pieces",
-    why:"Fun, hand-held and trendy — a cheerful iftar or moreh snack to share.",
-    source:"Che Sayang Kitchen's 'Popia Sate' TikTok, inspired by the viral sate bhalut"
+    calories:"≈ 310 kcal untuk 3 keping",
+    why:"Seronok dan mudah dibawa — snek ceria untuk dikongsi.",
+    source:"TikTok 'Popia Sate' Che Sayang Kitchen, diilhamkan trend sate bhalut viral"
   },
   {
-    id:"udangmercun", name:"Udang Mercun (Firecracker Prawns)",
+    id:"udangmercun", name:"Udang Mercun",
     creator:"Sheila Rusly", platform:"YouTube / IG @sheilarusly_jspictures — viral Ramadan 2023",
-    img:IMG.eggs, credit:"Photo: Wikimedia Commons (example fried-snack photo)",
+    img:IMG.eggs, credit:"Foto: Wikimedia Commons (contoh foto snek goreng)",
     emoji:"🎆",
-    summary:"Whole prawns wrapped in popia skin so they 'explode' with juice when you bite — her viral buka puasa showstopper.",
-    time:30, difficulty:"Medium", type:"Buka puasa", mood:["cheerful","hungry"], ingredients:["prawn","egg"],
+    summary:"Udang utuh dibalut kulit popia sehingga 'meletup' dengan jus ketika digigit — kebanggaan makan petang beliau.",
+    time:30, difficulty:"Sederhana", type:"Makan petang", mood:["cheerful","hungry"], ingredients:["prawn","egg"],
     tagFilter:["fast"],
-    ingredientList:["12 large prawns, tails on, cleaned","6 popia sheets, halved","1 egg, beaten + corn flour for sealing","Thai sweet chilli sauce for dipping","Oil for deep-frying"],
+    ingredientList:["12 ekor udang besar, ekor dikekalkan, dibersihkan","6 keping kulit popia, dibelah dua","1 biji telur, dipukut + tepung jagung untuk gam","Sos cili manis Thai untuk cicah","Minyak untuk mengoreng"],
     steps:[
-      "Season the prawns lightly with pepper.",
-      "Wrap each prawn diagonally in popia skin, sealing the tip with egg and corn flour paste.",
-      "Deep-fry in hot oil until golden and blistered, about 3 minutes.",
-      "Drain and serve immediately with Thai sweet chilli sauce.",
-      "Bite carefully — the 'mercun' pop of hot juice is the whole point!"
+      "Perasakan udang sedikit dengan lada hitam.",
+      "Balut setiap udang pepenjuru dalam kulit popia, gam hujungnya dengan pes telur dan tepung jagung.",
+      "Goreng dalam minyak panas hingga keemasan dan berkedut, lebih kurang 3 minit.",
+      "Tos dan hidang serta-merta bersama sos cili manis Thai.",
+      "Gigit dengan berhati-hati — 'letupan' jus panas itulah Keistimewaannya!"
     ],
-    calories:"≈ 280 kcal for 4 pieces",
-    why:"A playful showstopper — perfect for a cheerful iftar spread that gets everyone talking.",
-    source:"Sheila Rusly's 'Udang Mercun' Ramadan recipe"
+    calories:"≈ 280 kcal untuk 4 keping",
+    why:"Hidangan meriah — sempurna untuk meja makan yang penuh perbualan.",
+    source:"Resepi 'Udang Mercun' Sheila Rusly"
   },
   {
     id:"bergedil", name:"Bergedil Tempe",
-    creator:"Sheila Rusly", platform:"Instagram @sheilarusly_jspictures — 500k+ views",
-    img:IMG.porridge, credit:"Photo: Wikimedia Commons (example side-dish photo)",
+    creator:"Sheila Rusly", platform:"Instagram @sheilarusly_jspictures — 500k+ tontonan",
+    img:IMG.porridge, credit:"Foto: Wikimedia Commons (contoh foto lauk sampingan)",
     emoji:"🥔",
-    summary:"Her budget-friendly twist on bergedil — potato-and-tempe patties, crispy outside, soft inside, easy on the wallet.",
-    time:25, difficulty:"Easy", type:"Sahur", mood:["light","tired"], ingredients:["egg"],
+    summary:"Versi beliau yang menjimatkan — begedil kentang dan tempe, rangup di luar, lembut di dalam.",
+    time:25, difficulty:"Mudah", type:"Sarapan/Sahur", mood:["light","tired"], ingredients:["egg"],
     tagFilter:["easy","sahur"],
-    ingredientList:["3 potatoes, boiled and mashed","1 piece tempe, steamed and crumbled","1 egg + 1 egg yolk (for binding and coating)","1 onion + 2 garlic, fried till soft","Salt, white pepper, a pinch of sugar","Oil for shallow frying"],
+    ingredientList:["3 ubi kentang, direbus dan dilenyek","1 keping tempe, dikukus dan dihancurkan","1 biji telur + 1 kuning telur (untuk gam dan salutan)","1 biji bawang besar + 2 ulas bawang putih, digoreng hingga layu","Garam, lada putih, cubit gula","Minyak untuk mengoreng cetek"],
     steps:[
-      "Mash the hot boiled potatoes; mix in crumbled tempe, fried aromatics and seasoning.",
-      "Shape into flat patties.",
-      "Dip each in beaten egg and shallow-fry until both sides are golden.",
-      "Drain on paper towel.",
-      "Serve with sambal and hot rice — or tuck into a sandwich for sahur."
+      "Lenyek kentang panas; campur tempe hancur, bawang goreng dan perasa.",
+      "Bentukkan menjadi patah leper.",
+      "Celup setiap satu dalam telur pukut dan goreng cetek hingga kedua-dua sisi keemasan.",
+      "Tos atas tisu dapur.",
+      "Hidang dengan sambal dan nasi panas — atau selit dalam roti untuk sarapan."
     ],
-    calories:"≈ 240 kcal for 2 pieces",
-    why:"Cheap, filling and easy — a gentle sahur side that pairs with anything.",
-    source:"Sheila Rusly's 'Bergedil Tempe' Instagram recipe"
+    calories:"≈ 240 kcal untuk 2 keping",
+    why:"Murah, mengenyangkan dan mudah — lauk sampingan yang serasi dengan apa sahaja.",
+    source:"Resepi 'Bergedil Tempe' Instagram Sheila Rusly"
   },
   {
     id:"tomyam", name:"Tomyam Putih ala Restoran Thai",
-    creator:"Che Nom", platform:"YouTube — CheNom (1.1M views)",
-    img:IMG.porridge, credit:"Photo: Wikimedia Commons (example soup photo)",
+    creator:"Che Nom", platform:"YouTube — CheNom (1.1 juta tontonan)",
+    img:IMG.porridge, credit:"Foto: Wikimedia Commons (contoh foto sup)",
     emoji:"🍲",
-    summary:"Her creamy white tomyam — restaurant-quality, surprisingly simple, and light enough for a fast-breaking starter.",
-    time:30, difficulty:"Easy", type:"Buka puasa", mood:["light","hungry"], ingredients:["prawn"],
+    summary:"Tomyam putih berkrim beliau — berkualiti restoran, senang dibuat, dan cukup ringan untuk pembuka selera.",
+    time:30, difficulty:"Mudah", type:"Makan tengah hari", mood:["light","hungry"], ingredients:["prawn"],
     tagFilter:["fast","easy"],
-    ingredientList:["300g prawns or chicken slices","1 litre chicken stock","3 stalks serai (lemongrass), bruised + 4 kaffir lime leaves + 2 slices galangal","5 shallots, quartered","200ml evaporated milk","2 tbsp fish sauce + 1 tbsp sugar + lime juice","Red chillies and coriander to finish"],
+    ingredientList:["300g udang atau hirisan daging ayam","1 liter stok ayam","3 batang serai, diketuk + 4 daun limau purut + 2 hirisan lengkuas","5 bawang merah, dipotong empat","200ml susan sejat","2 sb sos ikan + 1 sb gula + jus limau","Cili merah dan ketumbar untuk hiasan"],
     steps:[
-      "Simmer the stock with lemongrass, lime leaves and galangal for 10 minutes.",
-      "Add shallots and prawns; cook until the prawns turn pink.",
-      "Pour in evaporated milk and warm through without boiling hard.",
-      "Season with fish sauce, sugar and lime juice — balance salty, sour, creamy.",
-      "Finish with chillies and coriander; serve hot to open the fast gently."
+      "Rebus stok bersama serai, daun limau purut dan lengkuas selama 10 minit.",
+      "Masukkan bawang merah dan udang; masak sehingga udang berubah merah jambu.",
+      "Tuang susan sejat dan panaskan tanpa mendidih keras.",
+      "Perasakan dengan sos ikan, gula dan jus limau — imbang masin, masam, berkrim.",
+      "Tamatkan dengan cili dan ketumbar; hidang panas."
     ],
-    calories:"≈ 220 kcal per bowl",
-    why:"Light but full of flavour — a soothing starter that wakes up the stomach after a long fast.",
-    source:"Che Nom's 'Tomyam Putih' YouTube recipe"
+    calories:"≈ 220 kcal semangkuk",
+    why:"Ringan tetapi penuh rasa — pembuka selera yang menenangkan perut.",
+    source:"Resepi 'Tomyam Putih' YouTube Che Nom"
   },
   {
-    id:"kurmasmoothie", name:"Kurma & Banana Power Smoothie",
-    creator:"Board pick (inspired by everyone's 'start with dates' ritual)", platform:"Ramadan classic",
-    img:IMG.smoothie, credit:"Photo: Wikimedia Commons (example drink photo)",
+    id:"kurmasmoothie", name:"Smoothie Kurma & Pisang",
+    creator:"Papan cadangan (amalan klasik buka dengan kurma)", platform:"Klasik Malaysia",
+    img:IMG.smoothie, credit:"Foto: Wikimedia Commons (contoh foto minuman)",
     emoji:"🥤",
-    summary:"A two-minute blended opener — dates, banana and milk, the gentlest way to break the fast before the main dish.",
-    time:15, difficulty:"Easy", type:"Buka puasa", mood:["light","tired"], ingredients:["egg"],
+    summary:"Minuman pembuka dua minit — kurma, pisang dan susu, paling lembut untuk memulakan hidangan.",
+    time:15, difficulty:"Mudah", type:"Makan tengah hari", mood:["light","tired"], ingredients:["egg"],
     tagFilter:["fast","easy"],
-    ingredientList:["6 kurma (dates), pitted and soaked in warm milk","1 ripe banana","250ml fresh milk (or soy milk)","1/4 tsp cinnamon","2 ice cubes (optional)"],
+    ingredientList:["6 biji kurma, dibuang biji dan direndam dalam susu panas","1 biji pisang masak","250ml susu segar (atau susu soya)","1/4 st kayu manis","2 ketul ais (pilihan)"],
     steps:[
-      "Soak the dates in warm milk for 3 minutes to soften.",
-      "Blend dates, milk, banana and cinnamon until smooth.",
-      "Pour over ice if you like it cold.",
-      "Sip slowly with a few whole dates — the traditional sunnah opener."
+      "Rendam kurma dalam susu panas selama 3 minit untuk melembutkan.",
+      "Blend kurma, susu, pisang dan kayu manis hingga halus.",
+      "Tuang atas ais jika suka dingin.",
+      "Minum perlahan-lahan bersama beberapa biji kurma utuh."
     ],
-    calories:"≈ 260 kcal per glass",
-    why:"The gentlest start — perfect when you're tired and want something kind to the stomach first.",
-    source:"Common Ramadan practice — dates and milk to break the fast"
+    calories:"≈ 260 kcal segelas",
+    why:"Permulaan paling lembut — sesuai bila anda penat dan mahu sesuatu yang lembut dahulu.",
+    source:"Amalan klasik Malaysia — kurma dan susu"
   }
 ];
 
-let activeQuick="all", selMood=null, selTime=null, selIng=null, selectedRecipe=null;
-
-/* ---------- fresh recipe pool (scraped daily via GitHub Actions) ---------- */
-let RECIPES = BUILTIN_RECIPES;               // curated fallback, never empty
-let poolSource = "curated (built-in)";
+/* ---------- kolam resepi segar (dijana skrip harian GitHub Actions) ---------- */
+let RECIPES = BUILTIN_RECIPES;
+let poolSource = "terbina dalam (kolam asas)";
 const CACHE_KEY = "rrsb_pool_v1";
-const CACHE_MAX_AGE_MS = 30 * 60 * 60 * 1000; // 30h — older cache ignored
+const CACHE_MAX_AGE_MS = 30 * 60 * 60 * 1000;
+
+let activeQuick="all", selMood=null, selTime=null, selIng=null, selectedRecipe=null, searchTerm="";
 
 function loadCachedPool(){
   try{
@@ -556,24 +595,20 @@ function loadCachedPool(){
 }
 
 async function refreshPool(){
-  // show cached pool instantly if we have one
   const cached = loadCachedPool();
-  if(cached){ applyPool(cached.recipes, `updated ${new Date(cached.savedAt).toLocaleString()} (cached)`); }
-
+  if(cached){ applyPool(cached.recipes, `dikemas kini ${new Date(cached.savedAt).toLocaleString("ms-MY")} (cache)`); }
   try{
     const res = await fetch("data/recipes.json", {cache:"no-cache"});
     if(!res.ok) throw new Error("HTTP " + res.status);
     const fresh = await res.json();
-    if(!Array.isArray(fresh) || fresh.length === 0) throw new Error("empty pool");
-    // keep scraped entries that have at least a name + id
+    if(!Array.isArray(fresh) || fresh.length === 0) throw new Error("kolam kosong");
     const usable = fresh.filter(r => r && r.id && r.name);
-    if(usable.length === 0) throw new Error("unusable pool");
+    if(usable.length === 0) throw new Error("kolam tidak boleh diguna");
     try{ localStorage.setItem(CACHE_KEY, JSON.stringify({savedAt: Date.now(), recipes: usable})); }catch(e){}
-    applyPool(usable, "fetched live just now");
+    applyPool(usable, "ditarik hidup sebentar tadi");
   }catch(e){
     if(!cached){
-      // no cache either: show a small notice but keep curated recipes
-      poolSource = "curated (built-in) — live pool unavailable";
+      poolSource = "terbina dalam — kolam hidup tidak tersedia";
       updateSummary();
     }
   }
@@ -581,56 +616,63 @@ async function refreshPool(){
 
 function applyPool(list, sourceLabel){
   RECIPES = list;
-  poolSource = `${list.length} recipes — ${sourceLabel}`;
+  poolSource = `${list.length} resepi — ${sourceLabel}`;
   renderBoard(); updateSummary();
 }
 
-
+function matchesSearch(r){
+  if(!searchTerm) return true;
+  const hay = `${r.name} ${r.creator} ${r.summary||""} ${r.source||""}`.toLowerCase();
+  return searchTerm.toLowerCase().split(/\s+/).every(tok => hay.includes(tok));
+}
 function matchesQuick(r){
   if(activeQuick==="all") return true;
   if(activeQuick==="fast") return r.time<=30;
-  if(activeQuick==="easy") return r.difficulty==="Easy";
-  if(activeQuick==="sahur") return r.type==="Sahur"||r.tagFilter.includes("sahur");
+  if(activeQuick==="easy") return r.difficulty==="Mudah"||r.difficulty==="Easy";
+  if(activeQuick==="sahur") return r.type==="Sarapan/Sahur"||(r.tagFilter||[]).includes("sahur");
   return true;
 }
 function matchesSmart(r){
-  if(selMood && !r.mood.includes(selMood)) return false;
+  if(selMood && !(r.mood||[]).includes(selMood)) return false;
   if(selTime){
     if(selTime==="15" && r.time>15) return false;
     if(selTime==="30" && r.time>30) return false;
     if(selTime==="60" && r.time<30) return false;
   }
-  if(selIng && !r.ingredients.includes(selIng)) return false;
+  if(selIng && !(r.ingredients||[]).includes(selIng)) return false;
   return true;
 }
 
 function cardHTML(r,i){
-  return `<div class="card" style="animation-delay:${Math.min(i*70,500)}ms">
+  return `<div class="card" style="animation-delay:${Math.min(i*60,400)}ms">
     <div class="card-img img-load">
       <img src="${r.img}" alt="${r.name}" loading="lazy" onload="this.parentElement.classList.remove('img-load')">
       <span class="from-badge">👨‍🍳 ${r.creator}</span>
       <span class="emoji-float">${r.emoji || "🎥"}</span>
-      <span class="img-credit">${r.credit || "Photo: Wikimedia Commons"}</span>
+      <span class="img-credit">${r.credit || "Foto: Wikimedia Commons"}</span>
     </div>
     <div class="card-body">
       <h3>${r.name}</h3>
-      <p class="summary">${r.summary}</p>
+      <p class="summary">${r.summary || `Resepi terkini daripada ${r.creator}.`}</p>
       <div class="tags">
         <span class="tag time">⏱️ ${r.time} min</span>
         <span class="tag diff">${r.difficulty}</span>
         <span class="tag type">${r.type}</span>
       </div>
-      <button class="view-btn" onclick="openRecipe('${r.id}')">View recipe</button>
+      <button class="view-btn" onclick="openRecipe('${r.id}')">Lihat resepi</button>
     </div>
   </div>`;
 }
 
 function renderBoard(){
   const board=document.getElementById("board");
-  const list=RECIPES.filter(r=>matchesQuick(r)&&matchesSmart(r));
-  document.getElementById("count-pill").textContent=`${list.length} recipes`;
+  const list=RECIPES.filter(r=>matchesQuick(r)&&matchesSmart(r)&&matchesSearch(r));
+  document.getElementById("count-pill").textContent=`${list.length} resepi`;
   if(list.length===0){
-    board.innerHTML=`<div class="empty-note">Hmm, nothing matches that combination. Try removing one of your Smart Picks choices — "Show all" above always works.</div>`;
+    const isSearch = searchTerm.length>0;
+    board.innerHTML=`<div class="empty-note">${isSearch
+      ? `🔍 Tiada resepi sepadan dengan "<strong>${searchTerm}</strong>". Cuba kata kunci lain — cth nama kuah, kreator, atau bahan utama.`
+      : `Hmm, tiada padanan untuk gabungan itu. Cuba buang satu pilihan Pilihan Bijak — butang "Semua" di atas sentiasa berfungsi.`}</div>`;
   } else {
     board.innerHTML=list.map(cardHTML).join("");
   }
@@ -638,16 +680,17 @@ function renderBoard(){
 
 function updateSummary(){
   const s=document.getElementById("summary-text");
-  const n=RECIPES.filter(r=>matchesQuick(r)&&matchesSmart(r)).length;
+  const n=RECIPES.filter(r=>matchesQuick(r)&&matchesSmart(r)&&matchesSearch(r)).length;
   const bits=[];
-  if(activeQuick!=="all") bits.push(`quick filter "${activeQuick}"`);
+  if(searchTerm) bits.push(`carian "${searchTerm}"`);
+  if(activeQuick!=="all") bits.push(`tapis "${activeQuick==="fast"?"bawah 30 min":activeQuick==="easy"?"senang":"sahur"}"`);
   if(selMood) bits.push(`mood "${selMood}"`);
-  if(selTime) bits.push(`time limit ${selTime} min`);
-  if(selIng) bits.push(`ingredient "${selIng}"`);
-  s.innerHTML=`<strong>${n} of ${RECIPES.length} recipes</strong> showing on the board`+
-    (bits.length?` (filtered by ${bits.join(", ")}).`:" — all of today's ideas.")+
-    ` <span style="color:var(--soft); font-size:.85rem;">· Pool: ${poolSource}</span>`+
-    (selectedRecipe?` &nbsp;✅ Selected: <strong>${selectedRecipe.name}</strong> by ${selectedRecipe.creator}${selectedRecipe.calories?` (${selectedRecipe.calories})`:""}.`:"");
+  if(selTime) bits.push(`had masa ${selTime} min`);
+  if(selIng) bits.push(`bahan "${selIng}"`);
+  s.innerHTML=`<strong>${n} daripada ${RECIPES.length} resepi</strong> dipaparkan di papan`+
+    (bits.length?` (ditapis: ${bits.join(", ")}).`:" — semua idea hari ini.")+
+    ` <span style="color:var(--soft); font-size:.85rem;">· Kolam: ${poolSource}</span>`+
+    (selectedRecipe?` &nbsp;✅ Dipilih: <strong>${selectedRecipe.name}</strong> oleh ${selectedRecipe.creator}${selectedRecipe.calories?` (${selectedRecipe.calories})`:""}.`:"");
 }
 
 function openRecipe(id){
@@ -655,7 +698,7 @@ function openRecipe(id){
   selectedRecipe=r;
   document.getElementById("detail-empty").style.display="none";
   const d=document.getElementById("detail");
-  d.classList.remove("open"); void d.offsetWidth; // restart animation
+  d.classList.remove("open"); void d.offsetWidth;
   d.classList.add("open");
   document.getElementById("d-img").src=r.img;
   document.getElementById("d-name").textContent=r.name;
@@ -664,13 +707,13 @@ function openRecipe(id){
   document.getElementById("d-ingredients").innerHTML =
     (r.ingredientList && r.ingredientList.length)
       ? r.ingredientList.map(i=>`<li>${i}</li>`).join("")
-      : `<li>⚠️ Full ingredient list lives in the original video — <a href="${r.url||"#"}" target="_blank" rel="noopener" style="color:var(--slate); font-weight:700;">watch on YouTube →</a></li>`;
+      : `<li>⚠️ Senarai bahan penuh ada dalam video asal — <a href="${r.url||"#"}" target="_blank" rel="noopener" style="color:var(--slate); font-weight:700;">tonton di YouTube →</a></li>`;
   document.getElementById("d-steps").innerHTML =
     (r.steps && r.steps.length)
       ? r.steps.map(s=>`<li>${s}</li>`).join("")
-      : `<li>📌 This is a freshly scraped suggestion from ${r.creator}. The simplified steps aren't extracted yet — <a href="${r.url||"#"}" target="_blank" rel="noopener" style="color:var(--slate); font-weight:700;">follow the original video here →</a></li>`;
-  document.getElementById("d-cal").textContent = r.calories || "Not estimated for scraped entries";
-  document.getElementById("d-credit").innerHTML=`📌 Recipe concept from <strong>${r.creator}</strong> — ${r.source}. See their channel for the full original video.`;
+      : `<li>📌 Ini cadangan terkini daripada ${r.creator}. Langkah dipermudahkan belum diekstrak — <a href="${r.url||"#"}" target="_blank" rel="noopener" style="color:var(--slate); font-weight:700;">ikut video asal di sini →</a></li>`;
+  document.getElementById("d-cal").textContent = r.calories || "Belum dianggar untuk resepi tular baharu";
+  document.getElementById("d-credit").innerHTML=`📌 Konsep resepi daripada <strong>${r.creator}</strong> — ${r.source}. Lihat saluran mereka untuk video penuh.`;
   document.getElementById("section-detail").scrollIntoView({behavior:"smooth",block:"start"});
   updateSummary();
 }
@@ -703,36 +746,53 @@ bindChips("mood-row","mood",v=>selMood=v);
 bindChips("time-row","time",v=>selTime=v);
 bindChips("ing-row","ing",v=>selIng=v);
 
+/* search bar */
+const searchEl=document.getElementById("search");
+const clearBtn=document.getElementById("search-clear");
+let searchTimer=null;
+searchEl.addEventListener("input",()=>{
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{
+    searchTerm=searchEl.value.trim();
+    clearBtn.classList.toggle("show", searchTerm.length>0);
+    renderBoard(); updateSummary();
+  },180); // debounce ringan
+});
+clearBtn.addEventListener("click",()=>{
+  searchEl.value=""; searchTerm=""; clearBtn.classList.remove("show");
+  renderBoard(); updateSummary(); searchEl.focus();
+});
+
+/* padanan bijak */
 document.getElementById("match-btn").addEventListener("click",()=>{
   const res=document.getElementById("pick-result");
   const list=RECIPES.filter(matchesSmart);
   if(list.length===0){
     res.classList.add("show");
     document.getElementById("pr-img").style.display="none";
-    document.getElementById("pr-name").textContent="No match found";
-    document.getElementById("pr-why").textContent="Try loosening a choice — e.g. 30 minutes instead of 15, or clear an ingredient.";
+    document.getElementById("pr-name").textContent="Tiada padanan dijumpai";
+    document.getElementById("pr-why").textContent="Cuba longgarkan satu pilihan — cth 30 minit bukannya 15, atau kosongkan bahan.";
     document.getElementById("pr-view").style.display="none";
     return;
   }
-  const best=list.slice().sort((a,b)=>(a.difficulty==="Easy"?0:1)-(b.difficulty==="Easy"?0:1)||a.time-b.time)[0];
+  const best=list.slice().sort((a,b)=>((a.difficulty==="Mudah"||a.difficulty==="Easy")?0:1)-((b.difficulty==="Mudah"||b.difficulty==="Easy")?0:1)||a.time-b.time)[0];
   res.classList.add("show");
   document.getElementById("pr-img").style.display="";
   document.getElementById("pr-img").src=best.img;
-  document.getElementById("pr-name").textContent=`${best.name} — by ${best.creator}`;
-  document.getElementById("pr-why").textContent=best.why+` (${best.time} min, ${best.difficulty.toLowerCase()}, ${best.calories}).`;
+  document.getElementById("pr-name").textContent=`${best.name} — oleh ${best.creator}`;
+  document.getElementById("pr-why").textContent=best.why+` (${best.time} min, ${best.difficulty.toLowerCase()}, ${best.calories||"kalori belum dianggar"}).`;
   document.getElementById("pr-view").style.display="";
   document.getElementById("pr-view").onclick=()=>openRecipe(best.id);
   res.scrollIntoView({behavior:"smooth",block:"center"});
 });
 
-// scroll reveal for section headings
+// scroll reveal
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible"); io.unobserve(e.target);}}),{threshold:.15});
 document.querySelectorAll(".section-head, .section-sub, #summary").forEach(el=>{el.classList.add("reveal"); io.observe(el);});
 
 renderBoard();
 updateSummary();
-refreshPool();   // fetch the daily-scraped pool (cached in localStorage) and re-render
-
+refreshPool();
 </script>
 </body>
 </html>
