@@ -335,7 +335,7 @@ const IMG = {
   rendang:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Beef_Rendang..JPG/960px-Beef_Rendang..JPG"
 };
 
-const RECIPES = [
+const BUILTIN_RECIPES = [
   {
     id:"nasilemak", name:"Sambal Nasi Lemak Ayam Goreng Berempah",
     creator:"Khairul Aming", platform:"TikTok / X — 30 Hari 30 Resepi",
@@ -539,6 +539,53 @@ const RECIPES = [
 
 let activeQuick="all", selMood=null, selTime=null, selIng=null, selectedRecipe=null;
 
+/* ---------- fresh recipe pool (scraped daily via GitHub Actions) ---------- */
+let RECIPES = BUILTIN_RECIPES;               // curated fallback, never empty
+let poolSource = "curated (built-in)";
+const CACHE_KEY = "rrsb_pool_v1";
+const CACHE_MAX_AGE_MS = 30 * 60 * 60 * 1000; // 30h — older cache ignored
+
+function loadCachedPool(){
+  try{
+    const raw = localStorage.getItem(CACHE_KEY);
+    if(!raw) return null;
+    const cached = JSON.parse(raw);
+    if(!Array.isArray(cached.recipes) || Date.now() - cached.savedAt > CACHE_MAX_AGE_MS) return null;
+    return cached;
+  }catch(e){ return null; }
+}
+
+async function refreshPool(){
+  // show cached pool instantly if we have one
+  const cached = loadCachedPool();
+  if(cached){ applyPool(cached.recipes, `updated ${new Date(cached.savedAt).toLocaleString()} (cached)`); }
+
+  try{
+    const res = await fetch("data/recipes.json", {cache:"no-cache"});
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const fresh = await res.json();
+    if(!Array.isArray(fresh) || fresh.length === 0) throw new Error("empty pool");
+    // keep scraped entries that have at least a name + id
+    const usable = fresh.filter(r => r && r.id && r.name);
+    if(usable.length === 0) throw new Error("unusable pool");
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({savedAt: Date.now(), recipes: usable})); }catch(e){}
+    applyPool(usable, "fetched live just now");
+  }catch(e){
+    if(!cached){
+      // no cache either: show a small notice but keep curated recipes
+      poolSource = "curated (built-in) — live pool unavailable";
+      updateSummary();
+    }
+  }
+}
+
+function applyPool(list, sourceLabel){
+  RECIPES = list;
+  poolSource = `${list.length} recipes — ${sourceLabel}`;
+  renderBoard(); updateSummary();
+}
+
+
 function matchesQuick(r){
   if(activeQuick==="all") return true;
   if(activeQuick==="fast") return r.time<=30;
@@ -562,8 +609,8 @@ function cardHTML(r,i){
     <div class="card-img img-load">
       <img src="${r.img}" alt="${r.name}" loading="lazy" onload="this.parentElement.classList.remove('img-load')">
       <span class="from-badge">👨‍🍳 ${r.creator}</span>
-      <span class="emoji-float">${r.emoji}</span>
-      <span class="img-credit">${r.credit}</span>
+      <span class="emoji-float">${r.emoji || "🎥"}</span>
+      <span class="img-credit">${r.credit || "Photo: Wikimedia Commons"}</span>
     </div>
     <div class="card-body">
       <h3>${r.name}</h3>
@@ -597,9 +644,10 @@ function updateSummary(){
   if(selMood) bits.push(`mood "${selMood}"`);
   if(selTime) bits.push(`time limit ${selTime} min`);
   if(selIng) bits.push(`ingredient "${selIng}"`);
-  s.innerHTML=`<strong>${n} of ${RECIPES.length} viral recipes</strong> showing on the board`+
+  s.innerHTML=`<strong>${n} of ${RECIPES.length} recipes</strong> showing on the board`+
     (bits.length?` (filtered by ${bits.join(", ")}).`:" — all of today's ideas.")+
-    (selectedRecipe?` &nbsp;✅ Selected: <strong>${selectedRecipe.name}</strong> by ${selectedRecipe.creator} (${selectedRecipe.calories}).`:"");
+    ` <span style="color:var(--soft); font-size:.85rem;">· Pool: ${poolSource}</span>`+
+    (selectedRecipe?` &nbsp;✅ Selected: <strong>${selectedRecipe.name}</strong> by ${selectedRecipe.creator}${selectedRecipe.calories?` (${selectedRecipe.calories})`:""}.`:"");
 }
 
 function openRecipe(id){
@@ -613,9 +661,15 @@ function openRecipe(id){
   document.getElementById("d-name").textContent=r.name;
   document.getElementById("d-from").textContent=`👨‍🍳 ${r.creator}`;
   document.getElementById("d-meta").textContent=`${r.platform} • ${r.type} • ${r.time} min • ${r.difficulty}`;
-  document.getElementById("d-ingredients").innerHTML=r.ingredientList.map(i=>`<li>${i}</li>`).join("");
-  document.getElementById("d-steps").innerHTML=r.steps.map(s=>`<li>${s}</li>`).join("");
-  document.getElementById("d-cal").textContent=r.calories;
+  document.getElementById("d-ingredients").innerHTML =
+    (r.ingredientList && r.ingredientList.length)
+      ? r.ingredientList.map(i=>`<li>${i}</li>`).join("")
+      : `<li>⚠️ Full ingredient list lives in the original video — <a href="${r.url||"#"}" target="_blank" rel="noopener" style="color:var(--slate); font-weight:700;">watch on YouTube →</a></li>`;
+  document.getElementById("d-steps").innerHTML =
+    (r.steps && r.steps.length)
+      ? r.steps.map(s=>`<li>${s}</li>`).join("")
+      : `<li>📌 This is a freshly scraped suggestion from ${r.creator}. The simplified steps aren't extracted yet — <a href="${r.url||"#"}" target="_blank" rel="noopener" style="color:var(--slate); font-weight:700;">follow the original video here →</a></li>`;
+  document.getElementById("d-cal").textContent = r.calories || "Not estimated for scraped entries";
   document.getElementById("d-credit").innerHTML=`📌 Recipe concept from <strong>${r.creator}</strong> — ${r.source}. See their channel for the full original video.`;
   document.getElementById("section-detail").scrollIntoView({behavior:"smooth",block:"start"});
   updateSummary();
@@ -677,6 +731,8 @@ document.querySelectorAll(".section-head, .section-sub, #summary").forEach(el=>{
 
 renderBoard();
 updateSummary();
+refreshPool();   // fetch the daily-scraped pool (cached in localStorage) and re-render
+
 </script>
 </body>
 </html>
