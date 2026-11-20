@@ -40,17 +40,18 @@ RECIPE_HINTS = re.compile(
 )
 
 # ---------------------------------------------------------------- categories
+# negative lookbehind guards: "bandung" alone = drink, "mee bandung" = noodle dish etc.
 CATEGORY_RULES = [  # (category, regex) — first match wins
-    ("Minuman",      r"\b(air |jus|smoothie|teh|kopi|milo|bandung|limau|sirap|minuman|latte|tea)\b"),
-    ("Kuih & Dessert", r"\b(kuih|dessert|puding|pudding|biskut|cake|kek|tart|brownie|cookies|agar|jeli|ice cream|ais krim|cendol|bubur cha|pengat|lama)\b"),
-    ("Snek",         r"\b(snek|snack|popia|keropok|cucur|cekodok|jemput|begedil|karipap|pau|donut|krok|banyak)\b"),
-    ("Kanak-kanak",  r"\b(kanak|budak|kids|kid|baby|bendi|finger|nugget|cheese|simple untuk)\b"),
-    ("Sihat",        r"\b(sihat|healthy|diet|rendah|kurma|salad|sayur|tempe|tauhu|oat|quinoa|keto|protein)\b"),
-    ("Mee & Pasta",  r"\b(mee|mihun|kuey|kuetiau|laksa|spaghetti|pasta|macaroni|bihun|lami|yee)\b"),
-    ("Nasi",         r"\b(nasi|nasilemak|pulut|biriyani|biryani|nasi goreng|kerabu)\b"),
-    ("Sup",          r"\b(sup|soup|tomyam|tomyum|broth|wantan)\b"),
+    ("Mee & Pasta",  r"\b(mee\s*bandung|mee|mihun|meehon|kuey|kuetiau|kueh teow|laksa|spaghetti|pasta|macaroni|bihun|lami|yee mee|char kuey)\b"),
+    ("Minuman",      r"\b(air\s+(bandung|suam|limau|teh|sirap)|jus|smoothie|teh\s|kopi\s|milo\s|ais krim|sirap|minuman|latte|iced|smoothies)\b"),
+    ("Kuih & Dessert", r"\b(kuih|dessert|puding|pudding|biskut|cake|kek\s|kek$|tart|brownie|cookies|agar\b|jeli\b|ice cream|ais krim|cendol|bubur cha|pengat)\b"),
+    ("Snek",         r"\b(snek|snack|popia|keropok|cucur|cekodok|jemput[- ]?jemput|begedil|karipap|pau\b|donut|kroket|cokodok)\b"),
+    ("Kanak-kanak",  r"\b(kanak[- ]?kanak|budak\b|untuk kanak|kids?\b|baby|finger food|nugget)\b"),
+    ("Sihat",        r"\b(sihat|healthy|diet|rendah (gula|kalori|lemak|kolestrol)|kurma\b|salad|oat\b|quinoa|keto)\b"),
+    ("Nasi",         r"\b(nasi lemak|nasi goreng|nasi tomato|nasi paprik|pulut|biriyani|biryani|kerabu\b|nasi kandar|nasi minyak|nasi impit|nasi himpit|nasi\b)\b"),
+    ("Sup",          r"\b(sup\b|soup|tomyam|tomyum|broth|sup wantan)\b"),
     ("Lauk Ayam",    r"\b(ayam|chicken)\b"),
-    ("Lauk Lain",    r"\b(daging|beef|ikut|kambing|ikan|fish|udang|prawn|sotong|squid|telur|egg|sayur|kari|rendang|masak)\b"),
+    ("Lauk Lain",    r"\b(daging|beef|kambing|ikan|fish|udang|prawn|sotong|squid|telur|egg|sayur|kari\b|rendang|masak)\b"),
 ]
 CATEGORIES = [c for c, _ in CATEGORY_RULES]
 
@@ -312,7 +313,7 @@ def build_recipe(e):
         full = fetch_full_description(m.group(1))
         if len(full) > len(e["desc"]):
             e = dict(e, vid=m.group(1), desc=full)
-    cat = categorize(e["title"], e["desc"])
+    cat = categorize(e["title"], (e["desc"].split("\n")[0] if e["desc"] else "")[:200])
     ings = parse_ingredients(e["desc"])
     steps = parse_steps(e["desc"])
     t = guess_time(e["title"], e["desc"])
@@ -411,6 +412,10 @@ def main():
             seen.add(rec["id"])
     # keep only entries with a real cooking guide — the board must be informative
     existing = [r for r in existing if r.get("ingredientList") or r.get("steps")]
+    # always re-categorize: rules improve over time, old labels must not persist
+    for i, r in enumerate(existing):
+        existing[i]["category"] = categorize(r.get("name", ""), r.get("summary") or "")
+        existing[i]["type"] = existing[i]["category"]
     # normalise legacy entries that lack the new fields
     for i, r in enumerate(existing):
         if not r.get("category"):
