@@ -134,6 +134,11 @@
   .tag.time{background:#E8F3DC; color:var(--leaf);}
   .tag.diff{background:#FDEEDA; color:var(--rust);}
   .tag.type{background:#E3EEF2; color:var(--slate);}
+  .tag.cat{background:#FBEFD9; color:var(--brown);}
+  .card-nutrition{
+    font-size:.75rem; color:var(--slate); background:#F0F5F8;
+    border-radius:8px; padding:6px 10px; margin-bottom:12px; font-weight:600;
+  }
   .view-btn{
     align-self:flex-start; background:linear-gradient(135deg, var(--orange), var(--rust)); color:#fff; border:none;
     border-radius:12px; padding:10px 20px; font-size:.9rem; cursor:pointer; font-family:inherit; font-weight:700;
@@ -266,13 +271,13 @@
       <button id="search-clear" title="Kosongkan carian">✕</button>
     </div>
 
-    <div class="chip-group-label">Tapis pantas — senarai berubah serta-merta:</div>
+    <div class="chip-group-label">Tapis ikut kategori — senarai berubah serta-merta:</div>
     <div class="chip-row" id="quick-filters">
       <button class="chip active" data-filter="all">Semua</button>
-      <button class="chip" data-filter="fast">Bawah 30 minit</button>
-      <button class="chip" data-filter="easy">Senang sahaja</button>
-      <button class="chip" data-filter="sahur">Sesuai untuk sahur</button>
+      <button class="chip" data-filter="fast">⏱️ Bawah 30 minit</button>
+      <button class="chip" data-filter="easy">✅ Senang sahaja</button>
     </div>
+    <div class="chip-row" id="category-filters"></div>
     <div id="board"></div>
   </section>
 
@@ -582,7 +587,7 @@ let poolSource = "terbina dalam (kolam asas)";
 const CACHE_KEY = "rrsb_pool_v1";
 const CACHE_MAX_AGE_MS = 30 * 60 * 60 * 1000;
 
-let activeQuick="all", selMood=null, selTime=null, selIng=null, selectedRecipe=null, searchTerm="";
+let activeQuick="all", activeCat=null, selMood=null, selTime=null, selIng=null, selectedRecipe=null, searchTerm="";
 
 function loadCachedPool(){
   try{
@@ -617,7 +622,7 @@ async function refreshPool(){
 function applyPool(list, sourceLabel){
   RECIPES = list;
   poolSource = `${list.length} resepi — ${sourceLabel}`;
-  renderBoard(); updateSummary();
+  renderCategoryChips(); renderBoard(); updateSummary();
 }
 
 function matchesSearch(r){
@@ -629,8 +634,23 @@ function matchesQuick(r){
   if(activeQuick==="all") return true;
   if(activeQuick==="fast") return r.time<=30;
   if(activeQuick==="easy") return r.difficulty==="Mudah"||r.difficulty==="Easy";
-  if(activeQuick==="sahur") return r.type==="Sarapan/Sahur"||(r.tagFilter||[]).includes("sahur");
   return true;
+}
+function matchesCat(r){
+  if(!activeCat) return true;
+  return (r.category||r.type)===activeCat;
+}
+function renderCategoryChips(){
+  const cats=[...new Set(RECIPES.map(r=>r.category||r.type))].filter(Boolean).slice(0,10);
+  const row=document.getElementById("category-filters");
+  row.innerHTML = `<button class="chip ${!activeCat?"active":""}" data-cat="">🏷️ Semua kategori</button>` +
+    cats.map(c=>`<button class="chip ${activeCat===c?"active":""}" data-cat="${c}">${c}</button>`).join("");
+  row.querySelectorAll(".chip").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      activeCat = btn.dataset.cat || null;
+      renderCategoryChips(); renderBoard(); updateSummary();
+    });
+  });
 }
 function matchesSmart(r){
   if(selMood && !(r.mood||[]).includes(selMood)) return false;
@@ -655,10 +675,11 @@ function cardHTML(r,i){
       <h3>${r.name}</h3>
       <p class="summary">${r.summary || `Resepi terkini daripada ${r.creator}.`}</p>
       <div class="tags">
+        <span class="tag cat">${r.category || r.type}</span>
         <span class="tag time">⏱️ ${r.time} min</span>
         <span class="tag diff">${r.difficulty}</span>
-        <span class="tag type">${r.type}</span>
       </div>
+      ${r.nutrition ? `<div class="card-nutrition">🔥 ${r.nutrition.kcal} kcal · Karbo ${r.nutrition.karbo} · Prot ${r.nutrition.protein} · Lemak ${r.nutrition.lemak}</div>` : (r.calories ? `<div class="card-nutrition">🔥 ${r.calories}</div>` : "")}
       <button class="view-btn" onclick="openRecipe('${r.id}')">Lihat resepi</button>
     </div>
   </div>`;
@@ -666,7 +687,7 @@ function cardHTML(r,i){
 
 function renderBoard(){
   const board=document.getElementById("board");
-  const list=RECIPES.filter(r=>matchesQuick(r)&&matchesSmart(r)&&matchesSearch(r));
+  const list=RECIPES.filter(r=>matchesQuick(r)&&matchesCat(r)&&matchesSmart(r)&&matchesSearch(r));
   document.getElementById("count-pill").textContent=`${list.length} resepi`;
   if(list.length===0){
     const isSearch = searchTerm.length>0;
@@ -680,10 +701,11 @@ function renderBoard(){
 
 function updateSummary(){
   const s=document.getElementById("summary-text");
-  const n=RECIPES.filter(r=>matchesQuick(r)&&matchesSmart(r)&&matchesSearch(r)).length;
+  const n=RECIPES.filter(r=>matchesQuick(r)&&matchesCat(r)&&matchesSmart(r)&&matchesSearch(r)).length;
   const bits=[];
   if(searchTerm) bits.push(`carian "${searchTerm}"`);
-  if(activeQuick!=="all") bits.push(`tapis "${activeQuick==="fast"?"bawah 30 min":activeQuick==="easy"?"senang":"sahur"}"`);
+  if(activeQuick!=="all") bits.push(`tapis "${activeQuick==="fast"?"bawah 30 min":"senang"}"`);
+  if(activeCat) bits.push(`kategori "${activeCat}"`);
   if(selMood) bits.push(`mood "${selMood}"`);
   if(selTime) bits.push(`had masa ${selTime} min`);
   if(selIng) bits.push(`bahan "${selIng}"`);
@@ -712,7 +734,10 @@ function openRecipe(id){
     (r.steps && r.steps.length)
       ? r.steps.map(s=>`<li>${s}</li>`).join("")
       : `<li>📌 Ini cadangan terkini daripada ${r.creator}. Langkah dipermudahkan belum diekstrak — <a href="${r.url||"#"}" target="_blank" rel="noopener" style="color:var(--slate); font-weight:700;">ikut video asal di sini →</a></li>`;
-  document.getElementById("d-cal").textContent = r.calories || "Belum dianggar untuk resepi tular baharu";
+  const nut = r.nutrition;
+  document.getElementById("d-cal").textContent = nut
+    ? `${nut.kcal} kcal · Karbohidrat ${nut.karbo} · Protein ${nut.protein} · Lemak ${nut.lemak}`
+    : (r.calories || "Belum dianggar");
   document.getElementById("d-credit").innerHTML=`📌 Konsep resepi daripada <strong>${r.creator}</strong> — ${r.source}. Lihat saluran mereka untuk video penuh.`;
   document.getElementById("section-detail").scrollIntoView({behavior:"smooth",block:"start"});
   updateSummary();
@@ -790,6 +815,7 @@ document.getElementById("match-btn").addEventListener("click",()=>{
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible"); io.unobserve(e.target);}}),{threshold:.15});
 document.querySelectorAll(".section-head, .section-sub, #summary").forEach(el=>{el.classList.add("reveal"); io.observe(el);});
 
+renderCategoryChips();
 renderBoard();
 updateSummary();
 refreshPool();
